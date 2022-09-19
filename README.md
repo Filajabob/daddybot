@@ -1,2 +1,2 @@
-# tyrone
+# daddybot
 A general purpose Discord bot.
