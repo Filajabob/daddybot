@@ -1,4 +1,5 @@
 assets/auth/
 !assets/auth/README.txt
+!assets/.gitkeep
 .idea/
 logs/
