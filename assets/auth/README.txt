@@ -1,0 +1,1 @@
+This directory is for authentication credentials. All files in this directory will be ignored by Git!
