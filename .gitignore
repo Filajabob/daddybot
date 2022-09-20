@@ -1,0 +1,4 @@
+assets/auth/
+!assets/auth/README.txt
+.idea/
+logs/
