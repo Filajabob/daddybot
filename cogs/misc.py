@@ -11,10 +11,10 @@ class MiscCog(commands.Cog):
     async def help(self, ctx: discord.ApplicationContext,
                    command: discord.Option(discord.SlashCommandOptionType.string, "command", required=False, default=None)):
 
+        # TODO: Fix this
         all_commands = [command.name for command in self.client.all_commands.values()]
 
         help_embed = discord.Embed(title="DaddyBot Help")
-        command_names_list = [x for x in all_commands]
 
         if not command:
             help_embed.add_field(
@@ -28,7 +28,7 @@ class MiscCog(commands.Cog):
                 inline=False
             )
 
-        elif command in command_names_list:
+        elif command in all_commands:
             if not hasattr(self.client.get_command(command), "description"):
                 help_embed.add_field(
                     name=command,
@@ -46,8 +46,9 @@ class MiscCog(commands.Cog):
                 value="That command wasn't found. Ooops"
             )
 
-        await ctx.send(embed=help_embed)
+        await ctx.respond(embed=help_embed)
 
     @commands.slash_command(name="ping", description="Get the bot's latency")
     async def ping(self, ctx):
-        await ctx.send(f"Pong! Latency: {round(self.client.latency, 2)}ms")
+        """Get the bot's latency"""
+        await ctx.respond(f"Pong! Latency: {round(self.client.latency, 2)}ms")

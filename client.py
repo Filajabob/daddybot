@@ -17,11 +17,12 @@ logger.addHandler(handler)
 
 # Constants
 TOKEN_PATH = "assets/auth/TOKEN.txt"
-client = commands.Bot(debug_guilds=["813594607324758066"])
+DEV_TOKEN_PATH = "assets/auth/DEV_TOKEN.txt"
+client = commands.Bot(debug_guilds=["813594607324758066", "1021919859203903488"])
 
 # Check if TOKEN.txt exists
-if not os.path.exists(TOKEN_PATH):
-    raise FileNotFoundError("TOKEN.txt was not found. Make sure to add TOKEN.txt to the assets/auth directory.")
+if not (os.path.exists(TOKEN_PATH) or os.path.exists(DEV_TOKEN_PATH)):
+    raise FileNotFoundError("TOKEN.txt or DEV_TOKEN.txt was not found. Make sure to add TOKEN.txt to the assets/auth directory.")
 
 client.remove_command("help")
 
@@ -29,8 +30,15 @@ client.remove_command("help")
 client.add_cog(EventCog(client))
 client.add_cog(MiscCog(client))
 
-with open(TOKEN_PATH) as f:
-    TOKEN = f.read()
+dev = input("Run the Developer bot? (y/N) ") == "y"
+
+if not dev:
+    with open(TOKEN_PATH) as f:
+        TOKEN = f.read()
+else:
+    print("Running dev bot...")
+    with open(DEV_TOKEN_PATH) as f:
+        TOKEN = f.read()
 
 
 client.run(TOKEN)
