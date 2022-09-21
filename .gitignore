@@ -3,3 +3,4 @@ assets/auth/
 !assets/.gitkeep
 .idea/
 logs/
+**/__pycache__/
