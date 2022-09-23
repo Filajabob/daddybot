@@ -7,6 +7,9 @@ from discord.ext import commands
 # Cogs
 from cogs.events import EventCog
 from cogs.misc import MiscCog
+from cogs.fun import FunCog
+
+__version__ = "1.0.0 Alpha"
 
 # Setup logging
 logger = logging.getLogger('discord')
@@ -18,20 +21,24 @@ logger.addHandler(handler)
 # Constants
 TOKEN_PATH = "assets/auth/TOKEN.txt"
 DEV_TOKEN_PATH = "assets/auth/DEV_TOKEN.txt"
-client = commands.Bot(debug_guilds=["813594607324758066", "1021919859203903488"])
 
-# Check if TOKEN.txt exists
-if not (os.path.exists(TOKEN_PATH) or os.path.exists(DEV_TOKEN_PATH)):
-    raise FileNotFoundError("TOKEN.txt or DEV_TOKEN.txt was not found. Make sure to add TOKEN.txt to the assets/auth directory.")
-
+client = commands.Bot(command_prefix="d!", debug_guilds=["1021919859203903488"])
 client.remove_command("help")
+
 
 # Add Cogs
 client.add_cog(EventCog(client))
 client.add_cog(MiscCog(client))
+client.add_cog(FunCog(client))
 
 dev = input("Run the Developer bot? (y/N) ") == "y"
 
+# @client.slash_command(name="help", description="Stop it. Get some help.")
+# async def help(ctx, command: discord.Option(discord.SlashCommandOptionType.string, "command", required=False,
+#                                             default=None)):
+#     if not command:
+#         await ctx.respond(help_command.)
+#
 if not dev:
     with open(TOKEN_PATH) as f:
         TOKEN = f.read()
@@ -39,6 +46,5 @@ else:
     print("Running dev bot...")
     with open(DEV_TOKEN_PATH) as f:
         TOKEN = f.read()
-
 
 client.run(TOKEN)

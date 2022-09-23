@@ -6,49 +6,11 @@ class MiscCog(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # https://stackoverflow.com/a/73504139/19106293
-    @commands.slash_command(name="help", description="Stop it. Get some help.")
-    async def help(self, ctx: discord.ApplicationContext,
-                   command: discord.Option(discord.SlashCommandOptionType.string, "command", required=False, default=None)):
-
-        # TODO: Fix this
-        all_commands = [command.name for command in self.client.all_commands.values()]
-
-        help_embed = discord.Embed(title="DaddyBot Help")
-
-        if not command:
-            help_embed.add_field(
-                name="List of supported commands:",
-                value="\n".join([str(i + 1) + ". " + x for i, x in enumerate(all_commands)]),
-                inline=False
-            )
-            help_embed.add_field(
-                name="Details",
-                value="Type `/help <command name>` for more details about each command.",
-                inline=False
-            )
-
-        elif command in all_commands:
-            if not hasattr(self.client.get_command(command), "description"):
-                help_embed.add_field(
-                    name=command,
-                    value="No description found."
-                )
-            else:
-                help_embed.add_field(
-                    name=command,
-                    value=self.client.get_command(command).description
-                )
-
-        else:
-            help_embed.add_field(
-                name="Uh oh.",
-                value="That command wasn't found. Ooops"
-            )
-
-        await ctx.respond(embed=help_embed)
-
     @commands.slash_command(name="ping", description="Get the bot's latency")
     async def ping(self, ctx):
         """Get the bot's latency"""
         await ctx.respond(f"Pong! Latency: {round(self.client.latency, 2)}ms")
+
+    @commands.slash_command(name="friend-code", description="Invite a friend for XP")
+    async def friend_code(self, ctx):
+        pass
