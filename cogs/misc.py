@@ -6,6 +6,7 @@ import pytz
 
 import discord
 from discord.ext import commands
+from discord.commands import Option
 
 # TODO: Move constants.py
 from utils.constants import Constants
@@ -38,7 +39,7 @@ class MiscCog(commands.Cog):
         await ctx.respond("Codes have been reset.", ephemeral=True)
 
     @commands.slash_command(name="friend-code", description="Generate a code that you can send to a friend when you "
-                                                            "invite them. Gets you and them XP. /friend-code-help **")
+                                                            "invite them. /friend-code-help **")
     async def friend_code(self, ctx):
         code_json = "assets/bot/friend_code/codes.json"
 
@@ -102,7 +103,7 @@ class MiscCog(commands.Cog):
                 if code in codes:
                     break
             else:
-                await ctx.respond("That code doesn't exist. Check with the person you recieved it from.",
+                await ctx.respond("That code doesn't exist. Check with the person you received it from.",
                                   ephemeral=True)
                 return
 
@@ -185,3 +186,23 @@ class MiscCog(commands.Cog):
             f.truncate()
 
         await ctx.respond(f"Code claimed! You got {Constants.XPSettings.FRIEND_CODE_CLAIMER_XP} XP.")
+
+    @commands.slash_command(name="xp", description="Check how much XP you have.")
+    async def xp(self, ctx, user: Option(discord.User, "User you want to check, defaults to you")=None):
+        if not user:
+            user = ctx.author
+
+        xp_json = "assets/bot/xp/xp.json"
+
+        with open(xp_json, 'r') as f:
+            data = json.load(f)
+
+        total_xp = 0
+
+        if str(user.id) not in data:
+            total_xp = 0
+
+        else:
+            total_xp = data[str(user.id)]
+
+        await ctx.respond(f"{user.mention} has {total_xp} XP.")
