@@ -8,12 +8,15 @@ import discord
 from discord.ext import commands
 
 # TODO: Move constants.py
-from .constants import Constants
-
+from utils.constants import Constants
 
 class MiscCog(commands.Cog):
     def __init__(self, client):
         self.client = client
+
+    @commands.slash_command(name="invite", description="Get the server's offical vanity link")
+    async def invite(self, ctx):
+        await ctx.respond("<https://dsc.gg/daddy-server>")
 
     @commands.slash_command(name="ping", description="Get the bot's latency")
     async def ping(self, ctx):
@@ -22,9 +25,6 @@ class MiscCog(commands.Cog):
 
     @commands.slash_command(name="reset-codes", description="Reset all your codes. No going back!")
     async def reset_codes(self, ctx):
-        await ctx.respond("Friend codes are in progress")
-        return
-
         code_json = "assets/bot/friend_code/codes.json"
 
         with open(code_json, 'r+') as f:
@@ -38,11 +38,8 @@ class MiscCog(commands.Cog):
         await ctx.respond("Codes have been reset.", ephemeral=True)
 
     @commands.slash_command(name="friend-code", description="Generate a code that you can send to a friend when you "
-                                                            "invite them. Gets you and them XP.")
+                                                            "invite them. Gets you and them XP. /friend-code-help **")
     async def friend_code(self, ctx):
-        await ctx.respond("Friend codes are in progress")
-        return
-
         code_json = "assets/bot/friend_code/codes.json"
 
         with open(code_json, 'r') as f:
@@ -78,14 +75,22 @@ class MiscCog(commands.Cog):
             json.dump(data, f)
             f.truncate()
 
-        await ctx.respond(f"Your friend code has been created. Keep it safe! Code: **{code}**", ephemeral=True)
+        await ctx.respond(f"Your friend code has been created. Keep it safe! Code: **{code}**\n"
+                          f"Make sure they claim the code as soon as they join.", ephemeral=True)
 
-    @commands.slash_command(name="claim-code", description="Claim a friend code that was sent by a friend")
+    @commands.slash_command(name="friend-code-help", description="Confused about friend codes? Here's the place!")
+    async def friend_code_help(self, ctx):
+        await ctx.respond("Friend codes are a way to reward those who invite people to promote server growth. Share your "
+                          "code with a friend while inviting them and you and your friend will earn XP! **Your friend must claim"
+                                                            f"the code within {Constants.MAX_CLAIM_TIME} seconds of "
+                                                            f"joining with /claim.**")
+
+    @commands.slash_command(name="claim-code", description="Claim a friend code that was sent by a friend. Confused? "
+                                                           "/friend-code-help")
     async def claim_code(self, ctx, code):
-        await ctx.respond("Friend codes are in progress")
-        return
-
         code_json = "assets/bot/friend_code/codes.json"
+        xp_json = "assets/bot/xp/xp.json"
+
         member = ctx.guild.get_member(ctx.author.id)
         joined_at = member.joined_at
 
@@ -105,7 +110,7 @@ class MiscCog(commands.Cog):
             claimed_users = json.load(f)
 
         # Check if user claimed a code already
-        if str(user.id) in claimed_users:
+        if str(user) in claimed_users:
             await ctx.respond("You already claimed a code!")
             return
 
@@ -113,15 +118,15 @@ class MiscCog(commands.Cog):
         # User took too long to claim code
         if (datetime.datetime.now(pytz.UTC) - joined_at).total_seconds() > Constants.MAX_CLAIM_TIME:
             await ctx.respond(f"You took too long to claim the code. There is a maximum of {Constants.MAX_CLAIM_TIME}"
-                              f" seconds to claim.", ephemeral=True)
+                              f" seconds to claim after joining.", ephemeral=True)
 
-            with open(code_json, 'r') as f:
+            with open(code_json, 'r+') as f:
                 data = json.load(f)
 
                 for user, codes in data.items():
                     if code in codes:
                         # Delete the now invalid code
-                        del data[user][data[user][code].index()]
+                        data[user].remove(code)
                         break
 
                 f.seek(0)
@@ -131,7 +136,7 @@ class MiscCog(commands.Cog):
             # Add user to list of people who claimed
             with open("assets/bot/friend_code/claimed.json", 'r+') as f:
                 data = json.load(f)
-                data.append(str(user.id))
+                data.append(str(user))
 
                 f.seek(0)
                 json.dump(data, f)
@@ -147,16 +152,36 @@ class MiscCog(commands.Cog):
                     break
 
             # user who sent the friend code
-            original_user = user
+            original_user_id = user
+            original_user = await self.client.fetch_user(original_user_id)
 
-            # TODO: Continue from here
+            with open(xp_json, 'r+') as f:
+                data = json.load(f)
 
+                if str(original_user_id) not in data:
+                    data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_XP
+                else:
+                    data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_XP
+
+                if str(ctx.author.id) not in data:
+                    data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
+                else:
+                    data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
+
+                f.seek(0)
+                json.dump(data, f)
+                f.truncate()
+
+            await original_user.send(f"{ctx.author.mention} has claimed one of your friend codes. You have received "
+                                     f"{Constants.XPSettings.FRIEND_CODE_XP} for inviting someone else to the server.")
 
         # Delete the code
         with open(code_json, 'r+') as f:
             data = json.load(f)
-            del data[user][data[user][code].index()]
+            data[user].remove(code)
 
             f.seek(0)
             json.dump(data, f)
             f.truncate()
+
+        await ctx.respond(f"Code claimed! You got {Constants.XPSettings.FRIEND_CODE_CLAIMER_XP} XP.")
