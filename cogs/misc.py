@@ -7,7 +7,8 @@ import pytz
 import discord
 from discord.ext import commands
 
-from constants import Constants
+# TODO: Move constants.py
+from .constants import Constants
 
 
 class MiscCog(commands.Cog):
