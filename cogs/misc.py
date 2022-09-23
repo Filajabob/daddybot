@@ -20,8 +20,7 @@ class MiscCog(commands.Cog):
         """Get the bot's latency"""
         await ctx.respond(f"Pong! Latency: {round(self.client.latency, 2)}ms")
 
-    @commands.slash_command(name="reset-codes", description="Your friends not responding? Reset your codes so you can "
-                                                            "invite better friends. This can't be reversed!")
+    @commands.slash_command(name="reset-codes", description="Reset all your codes. No going back!")
     async def reset_codes(self, ctx):
         await ctx.respond("Friend codes are in progress")
         return
