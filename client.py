@@ -22,7 +22,9 @@ logger.addHandler(handler)
 TOKEN_PATH = "assets/auth/TOKEN.txt"
 DEV_TOKEN_PATH = "assets/auth/DEV_TOKEN.txt"
 
-client = commands.Bot(command_prefix="d!", debug_guilds=["1021919859203903488"])
+intents = discord.Intents.all()
+
+client = commands.Bot(command_prefix="d!", debug_guilds=["1021919859203903488"], intents=intents)
 client.remove_command("help")
 
 
