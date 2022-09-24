@@ -206,3 +206,13 @@ class MiscCog(commands.Cog):
             total_xp = data[str(user.id)]
 
         await ctx.respond(f"{user.mention} has {total_xp} XP.")
+
+    @commands.slash_command(name="subscribe", description="Get server announcements in your notifications.")
+    async def subscribe(self, ctx):
+        await ctx.author.add_roles(ctx.guild.get_role(1022599314402455612))
+        await ctx.respond("Subscribed!")
+
+    @commands.slash_command(name="unsubscribe", description="Stop getting server announcements")
+    async def unsubscribe(self, ctx):
+        await ctx.author.remove_roles(ctx.guild.get_role(1022599314402455612))
+        await ctx.respond("Unsubscribed!")
