@@ -25,3 +25,8 @@ class EventCog(commands.Cog):
         # Give child role to member
         await member.add_roles(member.guild.get_role(1021965016976605316))
 
+    @commands.Cog.listener()
+    async def on_application_command_error(self, ctx, error):
+        await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
+        raise error
+
