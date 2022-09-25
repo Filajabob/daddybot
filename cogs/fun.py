@@ -1,8 +1,11 @@
+import json
+import random
+
 import discord
 from discord.ext import commands
 from discord.commands import SlashCommandGroup
+
 import requests
-import json
 
 
 class FunCog(commands.Cog):
@@ -17,3 +20,11 @@ class FunCog(commands.Cog):
         r = json.loads(requests.get(url).content.decode())
 
         await ctx.respond(f"{r[0]['quote']}\n-{r[0]['author']}")
+
+    @quote.command(name="the-office", description="Get a quote from the TV show The Office (US)")
+    async def the_office(self, ctx):
+        with open("assets/bot/quotes/the-office/the-office-quotes.json", 'r') as f:
+            data = json.load(f)
+
+        quote = random.choice(data)
+        await ctx.respond(f"{quote['quote']}\n-{quote['character']}")

@@ -8,8 +8,9 @@ from discord.ext import commands
 from cogs.events import EventCog
 from cogs.misc import MiscCog
 from cogs.fun import FunCog
+from cogs.music import MusicCog
 
-__version__ = "1.0.0 Alpha"
+__version__ = "0.1.0"
 
 # Setup logging
 logger = logging.getLogger('discord')
@@ -32,6 +33,7 @@ client.remove_command("help")
 client.add_cog(EventCog(client))
 client.add_cog(MiscCog(client))
 client.add_cog(FunCog(client))
+client.add_cog(MusicCog(client))
 
 dev = input("Run the Developer bot? (y/N) ") == "y"
 
