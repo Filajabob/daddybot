@@ -1,5 +1,7 @@
+import datetime
 import discord
 from discord.ext import commands
+import pytz
 
 
 class EventCog(commands.Cog):
@@ -28,5 +30,18 @@ class EventCog(commands.Cog):
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, error):
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
+
+        bot_error_channel = await self.client.fetch_channel(1024057742496911420)
+        now = datetime.datetime.now(pytz.UTC)
+        now_strftime = now.strftime("%Y-%m-%d %H:%M:%S")
+
+        em = discord.Embed(title=f"{type(error).__name__} at {now_strftime} UTC", color=discord.Color.red(), timestamp=now)
+        em.add_field(name="Traceback", value=str(error), inline=False)
+        em.add_field(name="User", value=ctx.author.mention, inline=False)
+        em.add_field(name="Channel", value=ctx.channel.mention, inline=False)
+        em.add_field(name="Timestamp", value=now_strftime, inline=False)
+
+        await bot_error_channel.send(embed=em)
+
         raise error
 
