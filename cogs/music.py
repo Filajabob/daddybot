@@ -77,7 +77,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         embed = discord.Embed(title="",
                               description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]",
                               color=discord.Color.green())
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
         if download:
             source = ytdl.prepare_filename(data)
@@ -196,11 +196,11 @@ class MusicCog(commands.Cog):
         """A local error handler for all errors arising from commands in this cog."""
         if isinstance(error, commands.NoPrivateMessage):
             try:
-                return await ctx.send('This command can not be used in Private Messages.')
+                return await ctx.respond('This command can not be used in Private Messages.')
             except discord.HTTPException:
                 pass
         elif isinstance(error, InvalidVoiceChannel):
-            await ctx.send('Error connecting to Voice Channel. '
+            await ctx.respond('Error connecting to Voice Channel. '
                            'Please make sure you are in a valid channel or provide me with one')
 
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
@@ -287,7 +287,7 @@ class MusicCog(commands.Cog):
         if not vc or not vc.is_playing():
             embed = discord.Embed(title="", description="I am currently not playing anything",
                                   color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
         elif vc.is_paused():
             return
 
@@ -302,7 +302,7 @@ class MusicCog(commands.Cog):
         if not vc or not vc.is_connected():
             embed = discord.Embed(title="", description="I'm not connected to a voice channel",
                                   color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
         elif not vc.is_paused():
             return
 
@@ -317,7 +317,7 @@ class MusicCog(commands.Cog):
         if not vc or not vc.is_connected():
             embed = discord.Embed(title="", description="I'm not connected to a voice channel",
                                   color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         if vc.is_paused():
             pass
@@ -362,7 +362,7 @@ class MusicCog(commands.Cog):
         if not vc or not vc.is_connected():
             embed = discord.Embed(title="", description="I'm not connected to a voice channel",
                                   color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         player = self.get_player(ctx)
         player.queue._queue.clear()
@@ -376,12 +376,12 @@ class MusicCog(commands.Cog):
         if not vc or not vc.is_connected():
             embed = discord.Embed(title="", description="I'm not connected to a voice channel",
                                   color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         player = self.get_player(ctx)
         if player.queue.empty():
             embed = discord.Embed(title="", description="queue is empty", color=discord.Color.green())
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         seconds = vc.source.duration % (24 * 3600)
         hour = seconds // 3600
