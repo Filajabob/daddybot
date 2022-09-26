@@ -86,7 +86,7 @@ class MiscCog(commands.Cog):
                                                             f"the code within {Constants.MAX_CLAIM_TIME} seconds of "
                                                             f"joining with /claim.**")
 
-    @commands.slash_command(name="claim-code", description="Claim a friend code that was sent by a friend. Confused? "
+    @commands.slash_command(name="claim", description="Claim a friend code that was sent by a friend. Confused? "
                                                            "/friend-code-help")
     async def claim_code(self, ctx, code):
         code_json = "assets/bot/friend_code/codes.json"
@@ -156,22 +156,35 @@ class MiscCog(commands.Cog):
             original_user_id = user
             original_user = await self.client.fetch_user(original_user_id)
 
-            with open(xp_json, 'r+') as f:
+            # Add inviter and claimer to inviters.json
+            with open("assets/bot/friend_code/inviters.json", 'r+') as f:
                 data = json.load(f)
 
-                if str(original_user_id) not in data:
-                    data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_XP
+                if not original_user_id in data:
+                    data[original_user_id] = [str(ctx.author.id)]
                 else:
-                    data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_XP
-
-                if str(ctx.author.id) not in data:
-                    data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
-                else:
-                    data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
+                    data[original_user_id].append(str(ctx.author.id))
 
                 f.seek(0)
                 json.dump(data, f)
                 f.truncate()
+
+        with open(xp_json, 'r+') as f:
+            data = json.load(f)
+
+            if str(original_user_id) not in data:
+                data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_XP
+            else:
+                data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_XP
+
+            if str(ctx.author.id) not in data:
+                data[str(original_user_id)] = Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
+            else:
+                data[str(original_user_id)] += Constants.XPSettings.FRIEND_CODE_CLAIMER_XP
+
+            f.seek(0)
+            json.dump(data, f)
+            f.truncate()
 
             await original_user.send(f"{ctx.author.mention} has claimed one of your friend codes. You have received "
                                      f"{Constants.XPSettings.FRIEND_CODE_XP} for inviting someone else to the server.")
@@ -216,3 +229,8 @@ class MiscCog(commands.Cog):
     async def unsubscribe(self, ctx):
         await ctx.author.remove_roles(ctx.guild.get_role(1022599314402455612))
         await ctx.respond("Unsubscribed!")
+
+    @commands.has_permissions(administrator=True)
+    @commands.slash_command(name="error")
+    async def error(self, ctx):
+        raise Exception("This is an intentional error.")
