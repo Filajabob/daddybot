@@ -44,7 +44,8 @@ class EventCog(commands.Cog):
         now = datetime.datetime.now(pytz.UTC)
         now_strftime = now.strftime("%Y-%m-%d %H:%M:%S")
 
-        em = discord.Embed(title=f"{type(error).__name__} at {now_strftime} UTC", color=discord.Color.red(), timestamp=now)
+        em = discord.Embed(title=f"{type(error).__name__} at {now_strftime} UTC", color=discord.Color.red(),
+                           timestamp=now)
         em.add_field(name="Traceback", value=str(error), inline=False)
         em.add_field(name="User", value=ctx.author.mention, inline=False)
         em.add_field(name="Channel", value=ctx.channel.mention, inline=False)
