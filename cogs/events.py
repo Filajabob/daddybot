@@ -1,7 +1,12 @@
+import json
+
 import datetime
 import discord
 from discord.ext import commands
+
 import pytz
+
+from utils.constants import Constants
 
 
 class EventCog(commands.Cog):
@@ -29,6 +34,10 @@ class EventCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f'Slow down! You can use this command in {round(error.retry_after, 2)} seconds.')
+            return
+
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
 
         bot_error_channel = await self.client.fetch_channel(1024057742496911420)
@@ -45,3 +54,25 @@ class EventCog(commands.Cog):
 
         raise error
 
+    @commands.Cog.listener()
+    async def on_message(self, msg):
+        # We got a message sent by the bot
+        if msg.author.id == self.client.user.id:
+            return
+
+        # We don't care if a bot sends a message
+        if msg.author.bot:
+            return
+
+        # Add XP to the author's total XP
+        with open("assets/bot/xp/xp.json", 'r+') as f:
+            data = json.load(f)
+
+            if str(msg.author.id) not in data:
+                data[str(msg.author.id)] = Constants.XPSettings.MESSAGE_XP
+            else:
+                data[str(msg.author.id)] += Constants.XPSettings.MESSAGE_XP
+
+            f.seek(0)
+            json.dump(data, f)
+            f.truncate()
