@@ -6,14 +6,16 @@ import pytz
 
 import discord
 from discord.ext import commands
-from discord.commands import Option
+from discord.commands import Option, SlashCommandGroup
 
-# TODO: Move constants.py
+import utils
 from utils.constants import Constants
 
 class MiscCog(commands.Cog):
     def __init__(self, client):
         self.client = client
+
+    xp = SlashCommandGroup("xp", "XP-related things")
 
     @commands.slash_command(name="invite", description="Get the server's offical vanity link")
     async def invite(self, ctx):
@@ -200,8 +202,8 @@ class MiscCog(commands.Cog):
 
         await ctx.respond(f"Code claimed! You got {Constants.XPSettings.FRIEND_CODE_CLAIMER_XP} XP.")
 
-    @commands.slash_command(name="xp", description="Check how much XP you have.")
-    async def xp(self, ctx, user: Option(discord.User, "User you want to check, defaults to you")=None):
+    @xp.command(name="query", description="Check how much XP you have.")
+    async def xp_query(self, ctx, user: Option(discord.User, "User you want to check, defaults to you")=None):
         if not user:
             user = ctx.author
 
@@ -234,3 +236,23 @@ class MiscCog(commands.Cog):
     @commands.slash_command(name="error")
     async def error(self, ctx):
         raise Exception("This is an intentional error.")
+
+    @commands.has_permissions(administrator=True)
+    @xp.command(name="add", description="Add XP to a user")
+    async def xp_add(self, ctx, user: Option(discord.User, "User you want to edit"), amount: Option(int, "Amount of XP to add")):
+        utils.xp.add(user, amount)
+        await ctx.respond("Added XP!", ephemeral=True)
+
+    @commands.has_permissions(administrator=True)
+    @xp.command(name="subtract", description="Subtract XP to a user")
+    async def xp_subtract(self, ctx, user: Option(discord.User, "User you want to edit"),
+                     amount: Option(int, "Amount of XP to subtract")):
+        utils.xp.subtract(user, amount)
+        await ctx.respond("Subtracted XP!", ephemeral=True)
+
+    @commands.has_permissions(administrator=True)
+    @xp.command(name="set", description="Set XP for a user")
+    async def xp_set(self, ctx, user: Option(discord.User, "User you want to edit"),
+                     amount: Option(int, "Amount of XP to add")):
+        utils.xp.set_amount(user, amount)
+        await ctx.respond("Set XP!", ephemeral=True)
