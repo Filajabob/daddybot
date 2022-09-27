@@ -9,6 +9,7 @@ from cogs.events import EventCog
 from cogs.misc import MiscCog
 from cogs.fun import FunCog
 from cogs.music import MusicCog
+from cogs.tasks import TaskCog
 
 __version__ = "0.1.0"
 
@@ -34,15 +35,10 @@ client.add_cog(EventCog(client))
 client.add_cog(MiscCog(client))
 client.add_cog(FunCog(client))
 client.add_cog(MusicCog(client))
+client.add_cog(TaskCog(client))
 
 dev = input("Run the Developer bot? (y/N) ") == "y"
 
-# @client.slash_command(name="help", description="Stop it. Get some help.")
-# async def help(ctx, command: discord.Option(discord.SlashCommandOptionType.string, "command", required=False,
-#                                             default=None)):
-#     if not command:
-#         await ctx.respond(help_command.)
-#
 if not dev:
     with open(TOKEN_PATH) as f:
         TOKEN = f.read()

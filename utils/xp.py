@@ -39,3 +39,14 @@ def set_amount(user, amount):
         f.truncate()
 
     return before
+
+def get_amount(user):
+    user = user.id
+
+    with open("assets/bot/xp/xp.json", 'r') as f:
+        data = json.load(f)
+
+    if str(user) not in data:
+        return None
+    else:
+        return data[str(user)]
