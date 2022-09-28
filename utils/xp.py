@@ -40,7 +40,11 @@ def set_amount(user, amount, dev):
     with open(path, 'r+') as f:
         data = json.load(f)
 
-        before = data[str(user)]
+        if str(user) in data:
+            before = data[str(user)]
+        else:
+            before = 0
+
         data[str(user)] = amount
 
         f.seek(0)
