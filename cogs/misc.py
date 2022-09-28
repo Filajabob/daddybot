@@ -11,6 +11,8 @@ from discord.commands import Option, SlashCommandGroup
 import utils
 from utils.constants import Constants
 
+Ranks = Constants.Ranks
+
 class MiscCog(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -256,3 +258,32 @@ class MiscCog(commands.Cog):
                      amount: Option(int, "Amount of XP to add")):
         utils.xp.set_amount(user, amount)
         await ctx.respond("Set XP!", ephemeral=True)
+
+    @xp.command(name="milestones", description="Check how much more XP to get to your next rank")
+    async def xp_milestones(self, ctx, user: Option(discord.User, "User you want check, defaults to you")=None):
+        if not user:
+            user = ctx.author
+
+        xp_amount = utils.xp.get_amount(user)
+        em = discord.Embed(title="XP Milestones", description="Your road to victory", color=discord.Color.green())
+
+        if not xp_amount >= Ranks.RANK_1:
+            em.add_field(name="XP until Rank I", value=Ranks.RANK_1 - xp_amount, inline=False)
+
+        if not xp_amount >= Ranks.RANK_2:
+            em.add_field(name="XP until Rank II", value=Ranks.RANK_2 - xp_amount, inline=False)
+
+        if not xp_amount >= Ranks.RANK_3:
+            em.add_field(name="XP until Rank III", value=Ranks.RANK_3 - xp_amount, inline=False)
+
+        if not xp_amount >= Ranks.RANK_4:
+            em.add_field(name="XP until Rank IV", value=Ranks.RANK_4 - xp_amount, inline=False)
+
+        if not xp_amount >= Ranks.RANK_5:
+            em.add_field(name="XP until Rank V", value=Ranks.RANK_5 - xp_amount, inline=False)
+
+        if xp_amount > Ranks.RANK_5:
+            em.add_field(name="Damn..", value="You're at the top of the world! No more ranking up. "
+                                              "You can still get more XP.")
+
+        await ctx.respond(embed=em)

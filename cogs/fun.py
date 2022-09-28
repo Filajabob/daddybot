@@ -3,7 +3,7 @@ import random
 
 import discord
 from discord.ext import commands
-from discord.commands import SlashCommandGroup
+from discord.commands import SlashCommandGroup, Option
 
 import requests
 
@@ -30,3 +30,22 @@ class FunCog(commands.Cog):
 
         quote = random.choice(data)
         await ctx.respond(f"{quote['quote']}\n-{quote['character']}")
+
+    @commands.slash_command(name="search-pi", description="Search for a series of digits in Pi.")
+    async def search_pi(self, ctx, search):
+        url = "https://introcs.cs.princeton.edu/java/data/pi-10million.txt"
+        r = requests.get(url).content.decode()
+
+        digit = r.find(search)
+
+        if digit == -1:
+            await ctx.respond(f"{search} was not found within the first ten million digits of Pi.")
+            return
+
+
+        await ctx.respond(f"**{search}** starts at digit **{digit + 2}**.\n")
+
+        if (not digit - 5 <= 0) and (not digit + 5 > len(r)):
+            await ctx.send(f"...{r[digit - 5:digit]}**{search}**{r[digit + len(search):digit + len(search) + 5]}...")
+
+

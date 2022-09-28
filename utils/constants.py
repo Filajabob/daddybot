@@ -1,18 +1,19 @@
 class Constants:
-    MAX_CLAIM_TIME = 1800 # Max time to claim a code, in seconds
+    MAX_CLAIM_TIME = 1800  # Max time to claim a code, in seconds
 
     class XPSettings:
-        FRIEND_CODE_XP = 5000 # XP the code creator gets
-        FRIEND_CODE_CLAIMER_XP = 1000 # XP the code claimer gets
+        FRIEND_CODE_XP = 5000  # XP the code creator gets
+        FRIEND_CODE_CLAIMER_XP = 2500  # XP the code claimer gets
 
-        MESSAGE_XP = 20 # Amount of XP author gets for a message
+        MESSAGE_XP = 25  # Amount of XP author gets for a message
+        DAILY_XP = 1000 # Amount of XP each day
 
     class Ranks:
         RANK_1 = 10000
-        RANK_2 = 25000
-        RANK_3 = 50000
-        RANK_4 = 85000
-        RANK_5 = 169420
+        RANK_2 = 50000
+        RANK_3 = 125000
+        RANK_4 = 230000
+        RANK_5 = 369420
 
         RANK_1_ID = 1022605556948668506
         RANK_2_ID = 1022606250376175630
