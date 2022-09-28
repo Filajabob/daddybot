@@ -21,7 +21,7 @@ class MiscCog(commands.Cog):
 
     @commands.slash_command(name="invite", description="Get the server's offical vanity link")
     async def invite(self, ctx):
-        await ctx.respond("<https://dsc.gg/daddy-server>")
+        await ctx.respond("<https://dsc.gg/memetopia>")
 
     @commands.slash_command(name="ping", description="Get the bot's latency")
     async def ping(self, ctx):
@@ -30,7 +30,10 @@ class MiscCog(commands.Cog):
 
     @commands.slash_command(name="reset-codes", description="Reset all your codes. No going back!")
     async def reset_codes(self, ctx):
-        code_json = "assets/bot/friend_code/codes.json"
+        if utils.is_dev(self.client):
+            code_json = "assets/bot/friend_code/codes.json"
+        else:
+            code_json = "assets/dev_bot/friend_code/codes.json"
 
         with open(code_json, 'r+') as f:
             data = json.load(f)
@@ -45,7 +48,10 @@ class MiscCog(commands.Cog):
     @commands.slash_command(name="friend-code", description="Generate a code that you can send to a friend when you "
                                                             "invite them. /friend-code-help **")
     async def friend_code(self, ctx):
-        code_json = "assets/bot/friend_code/codes.json"
+        if utils.is_dev(self.client):
+            code_json = "assets/bot/friend_code/codes.json"
+        else:
+            code_json = "assets/dev_bot/friend_code/codes.json"
 
         with open(code_json, 'r') as f:
             data = json.load(f)
@@ -93,8 +99,17 @@ class MiscCog(commands.Cog):
     @commands.slash_command(name="claim", description="Claim a friend code that was sent by a friend. Confused? "
                                                            "/friend-code-help")
     async def claim_code(self, ctx, code):
-        code_json = "assets/bot/friend_code/codes.json"
-        xp_json = "assets/bot/xp/xp.json"
+        if utils.is_dev(self.client):
+            code_json = "assets/bot/friend_code/codes.json"
+            xp_json = "assets/bot/xp/xp.json"
+            claimed_json = "assets/bot/friend_code/claimed.json"
+            inviters_json = "assets/bot/friend_code/inviters.json"
+        else:
+            code_json = "assets/dev_bot/friend_code/codes.json"
+            xp_json = "assets/dev_bot/xp/xp.json"
+            claimed_json = "assets/dev_bot/friend_code/claimed.json"
+            inviters_json = "assets/dev_bot/friend_code/inviters.json"
+
 
         member = ctx.guild.get_member(ctx.author.id)
         joined_at = member.joined_at
@@ -111,7 +126,7 @@ class MiscCog(commands.Cog):
                                   ephemeral=True)
                 return
 
-        with open("assets/bot/friend_code/claimed.json", 'r') as f:
+        with open(claimed_json, 'r') as f:
             claimed_users = json.load(f)
 
         # Check if user claimed a code already
@@ -139,7 +154,7 @@ class MiscCog(commands.Cog):
                 f.truncate()
 
             # Add user to list of people who claimed
-            with open("assets/bot/friend_code/claimed.json", 'r+') as f:
+            with open(claimed_json, 'r+') as f:
                 data = json.load(f)
                 data.append(str(user))
 
@@ -161,7 +176,7 @@ class MiscCog(commands.Cog):
             original_user = await self.client.fetch_user(original_user_id)
 
             # Add inviter and claimer to inviters.json
-            with open("assets/bot/friend_code/inviters.json", 'r+') as f:
+            with open(inviters_json, 'r+') as f:
                 data = json.load(f)
 
                 if not original_user_id in data:
@@ -209,20 +224,7 @@ class MiscCog(commands.Cog):
         if not user:
             user = ctx.author
 
-        xp_json = "assets/bot/xp/xp.json"
-
-        with open(xp_json, 'r') as f:
-            data = json.load(f)
-
-        total_xp = 0
-
-        if str(user.id) not in data:
-            total_xp = 0
-
-        else:
-            total_xp = data[str(user.id)]
-
-        await ctx.respond(f"{user.mention} has {total_xp} XP.")
+        await ctx.respond(f"{user.mention} has {utils.xp.get_amount(user, dev=utils.is_dev(self.client))} XP.")
 
     @commands.slash_command(name="subscribe", description="Get server announcements in your notifications.")
     async def subscribe(self, ctx):
@@ -242,21 +244,21 @@ class MiscCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     @xp.command(name="add", description="Add XP to a user")
     async def xp_add(self, ctx, user: Option(discord.User, "User you want to edit"), amount: Option(int, "Amount of XP to add")):
-        utils.xp.add(user, amount)
+        utils.xp.add(user, amount, dev=utils.is_dev(self.client))
         await ctx.respond("Added XP!", ephemeral=True)
 
     @commands.has_permissions(administrator=True)
     @xp.command(name="subtract", description="Subtract XP to a user")
     async def xp_subtract(self, ctx, user: Option(discord.User, "User you want to edit"),
                      amount: Option(int, "Amount of XP to subtract")):
-        utils.xp.subtract(user, amount)
+        utils.xp.subtract(user, amount, dev=utils.is_dev(self.client))
         await ctx.respond("Subtracted XP!", ephemeral=True)
 
     @commands.has_permissions(administrator=True)
     @xp.command(name="set", description="Set XP for a user")
     async def xp_set(self, ctx, user: Option(discord.User, "User you want to edit"),
                      amount: Option(int, "Amount of XP to add")):
-        utils.xp.set_amount(user, amount)
+        utils.xp.set_amount(user, amount, dev=utils.is_dev(self.client))
         await ctx.respond("Set XP!", ephemeral=True)
 
     @xp.command(name="milestones", description="Check how much more XP to get to your next rank")
@@ -264,7 +266,7 @@ class MiscCog(commands.Cog):
         if not user:
             user = ctx.author
 
-        xp_amount = utils.xp.get_amount(user)
+        xp_amount = utils.xp.get_amount(user, dev=utils.is_dev(self.client))
         em = discord.Embed(title="XP Milestones", description="Your road to victory", color=discord.Color.green())
 
         if not xp_amount >= Ranks.RANK_1:

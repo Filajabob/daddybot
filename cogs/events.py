@@ -7,6 +7,7 @@ from discord.ext import commands
 
 import pytz
 
+import utils
 from utils.constants import Constants
 
 
@@ -38,6 +39,9 @@ class EventCog(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f'Slow down! You can use this command in {round(error.retry_after, 2)} seconds.')
             return
+        elif isinstance(error, commands.MissingPermissions):
+            await ctx.respond(f"Don't overstep boundaries! {str(error)}")
+            return
 
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
 
@@ -49,6 +53,7 @@ class EventCog(commands.Cog):
                            timestamp=now)
         em.add_field(name="Traceback", value=str(error), inline=False)
         em.add_field(name="User", value=ctx.author.mention, inline=False)
+        em.add_field(name="Command", value=ctx.command.name, inline=False)
         em.add_field(name="Channel", value=ctx.channel.mention, inline=False)
         em.add_field(name="Timestamp", value=now_strftime, inline=False)
 
@@ -67,17 +72,7 @@ class EventCog(commands.Cog):
             return
 
         # Add XP to the author's total XP
-        with open("assets/bot/xp/xp.json", 'r+') as f:
-            data = json.load(f)
-
-            if str(msg.author.id) not in data:
-                data[str(msg.author.id)] = Constants.XPSettings.MESSAGE_XP
-            else:
-                data[str(msg.author.id)] += Constants.XPSettings.MESSAGE_XP
-
-            f.seek(0)
-            json.dump(data, f)
-            f.truncate()
+        utils.xp.add(msg.author, Constants.XPSettings.MESSAGE_XP, dev=utils.is_dev(self.client))
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

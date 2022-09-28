@@ -104,5 +104,5 @@ class TaskCog(commands.Cog):
         memetopia = await self.client.fetch_guild(1021919859203903488)
 
         async for member in memetopia.fetch_members(limit=None):
-            utils.xp.add(member, Constants.XPSettings.DAILY_XP)
+            utils.xp.add(member, Constants.XPSettings.DAILY_XP, dev=utils.is_dev(self.client))
 
