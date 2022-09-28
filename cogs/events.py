@@ -20,7 +20,7 @@ class EventCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        em = discord.Embed(title="Hello Newbie!", description="Welcome to the Daddy Server!")
+        em = discord.Embed(title="Hello Newbie!", description="Welcome to **Memetopia**!")
         em.add_field(name="About Me", value="I am the main bot in this server. I have many features, and more are"
                                             "coming.")
         em.add_field(name="XP", value="Being active on the server can get you XP. XP can get you to rank up, unlocking "
@@ -82,7 +82,8 @@ class EventCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         msgs = ["Here comes {}..!", "{} joined the game.", "I was hoping for Ryan Reynolds, but here's {}.",
-                "Hello {}! Hope you brought snacks.", ""]
+                "Hello {}! Hope you brought snacks.", "Ello there {}.", "Wazzup {}!", "Hey look, its {}!", "{} is here."
+                " Did you bring snacks by chance?", "Hi {}. Hopefully your name doesn't look weird with this sentence."]
 
         updates = await self.client.fetch_channel(1022328541217566760)
 
@@ -91,7 +92,8 @@ class EventCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         msgs = ["There goes {}. I never liked them anyway.", "Hey hey hey, goodbye {}", "{} left the game.",
-                "{} abandoned the match, and won't be spawned this round. Or ever. Unless they come back."]
+                "{} abandoned the match, and won't be spawned this round. Or ever. Unless they come back.",
+                "Hey {} left. Here's a song that matches the vibe: https://www.youtube.com/watch?v=jsaTElBljOE"]
 
         updates = await self.client.fetch_channel(1022328541217566760)
 
