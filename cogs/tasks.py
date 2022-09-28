@@ -23,15 +23,15 @@ class TaskCog(commands.Cog):
     # Assign the appropriate roles for people depending on their XP
     @tasks.loop(seconds=7.0)
     async def role_updater(self):
-        daddy_server = await self.client.fetch_guild(1021919859203903488)
+        memetopia = await self.client.fetch_guild(1021919859203903488)
 
-        rank1 = daddy_server.get_role(Ranks.RANK_1_ID)
-        rank2 = daddy_server.get_role(Ranks.RANK_2_ID)
-        rank3 = daddy_server.get_role(Ranks.RANK_3_ID)
-        rank4 = daddy_server.get_role(Ranks.RANK_4_ID)
-        rank5 = daddy_server.get_role(Ranks.RANK_5_ID)
+        rank1 = memetopia.get_role(Ranks.RANK_1_ID)
+        rank2 = memetopia.get_role(Ranks.RANK_2_ID)
+        rank3 = memetopia.get_role(Ranks.RANK_3_ID)
+        rank4 = memetopia.get_role(Ranks.RANK_4_ID)
+        rank5 = memetopia.get_role(Ranks.RANK_5_ID)
 
-        async for member in daddy_server.fetch_members(limit=None):
+        async for member in memetopia.fetch_members(limit=None):
             xp = utils.xp.get_amount(member)
 
             if not xp:
@@ -47,35 +47,35 @@ class TaskCog(commands.Cog):
                 if not member.get_role(Ranks.RANK_1_ID):
                     await member.add_roles(rank1)
                     await member.remove_roles(rank2, rank3, rank4, rank5)
-                    await member.send("Congratulations! You got Rank I in the Daddy Server!")
+                    await member.send("Congratulations! You got Rank I in Memetopia!")
 
             elif Ranks.RANK_2 <= xp < Ranks.RANK_3:
                 # Member should have rank 2 but doesn't
                 if not member.get_role(Ranks.RANK_2_ID):
                     await member.add_roles(rank2)
                     await member.remove_roles(rank1, rank3, rank4, rank5)
-                    await member.send("Congratulations! You got Rank II in the Daddy Server!")
+                    await member.send("Congratulations! You got Rank II in Memetopia!")
 
             elif Ranks.RANK_3 <= xp < Ranks.RANK_4:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_3_ID):
                     await member.add_roles(rank3)
                     await member.remove_roles(rank1, rank2, rank4, rank5)
-                    await member.send("Congratulations! You got Rank III in the Daddy Server!")
+                    await member.send("Congratulations! You got Rank III in Memetopia!")
 
             elif Ranks.RANK_4 <= xp < Ranks.RANK_5:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_4_ID):
                     await member.add_roles(rank4)
                     await member.remove_roles(rank1, rank2, rank3, rank5)
-                    await member.send("Congratulations! You got Rank IV in the Daddy Server!")
+                    await member.send("Congratulations! You got Rank IV in Memetopia!")
 
             elif xp >= Ranks.RANK_5:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_5_ID):
                     await member.add_roles(rank5)
                     await member.remove_roles(rank1, rank2, rank3, rank4)
-                    await member.send("DAMN BRO... You got Rank V in the Daddy Server!")
+                    await member.send("DAMN BRO... You got Rank V in Memetopia!")
 
     @tasks.loop(minutes=5)
     async def presence_updater(self):
@@ -101,8 +101,8 @@ class TaskCog(commands.Cog):
     @tasks.loop(time=datetime.time(4, 0, 0))
     async def daily_xp(self):
         await self.client.wait_until_ready()
-        daddy_server = await self.client.fetch_guild(1021919859203903488)
+        memetopia = await self.client.fetch_guild(1021919859203903488)
 
-        async for member in daddy_server.fetch_members(limit=None):
+        async for member in memetopia.fetch_members(limit=None):
             utils.xp.add(member, Constants.XPSettings.DAILY_XP)
 
