@@ -1,5 +1,6 @@
 class Constants:
     MAX_CLAIM_TIME = 1800  # Max time to claim a code, in seconds
+    INVITE_LINK = "https://dsc.gg"
 
     class XPSettings:
         FRIEND_CODE_XP = 5000  # XP the code creator gets
