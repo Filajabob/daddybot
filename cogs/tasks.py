@@ -32,7 +32,7 @@ class TaskCog(commands.Cog):
         rank5 = memetopia.get_role(Ranks.RANK_5_ID)
 
         async for member in memetopia.fetch_members(limit=None):
-            xp = utils.xp.get_amount(member)
+            xp = utils.xp.get_amount(member, dev=utils.is_dev(self.client))
 
             if not xp:
                 continue
