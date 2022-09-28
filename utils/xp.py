@@ -49,7 +49,7 @@ def set_amount(user, amount, dev):
 
     return before
 
-def get_amount(user):
+def get_amount(user, dev):
     user = user.id
 
     if not dev:
