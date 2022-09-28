@@ -4,12 +4,8 @@ assets/auth/
 .idea/
 logs/
 !logs/.gitkeep
+
 **/__pycache__/
-
-assets/bot/friend_code/
-assets/bot/xp/
-
-!assets/bot/friend_code/.gitkeep
-!assets/bot/xp/.gitkeep
+*.pyc
 
 !**/.gitkeep

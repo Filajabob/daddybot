@@ -3,9 +3,13 @@ import json
 def add(user, amount):
     user = user.id
 
-    with open("assets/bot/xp/xp.json", 'r+') as f:
-        data = json.load(f)
+    if not dev:
+        path = "assets/bot/xp/xp.json"
+    else:
+        path = "assets/dev_bot/xp/xp.json"
 
+    with open(path, 'r+') as f:
+        data = json.load(f)
 
         if str(user) not in data:
             before = 0
@@ -22,13 +26,18 @@ def add(user, amount):
 
     return before, after
 
-def subtract(user, amount):
-    return add(user, -amount)
+def subtract(user, amount, dev):
+    return add(user, -amount, dev)
 
-def set_amount(user, amount):
+def set_amount(user, amount, dev):
     user = user.id
 
-    with open("assets/bot/xp/xp.json", 'r+') as f:
+    if not dev:
+        path = "assets/bot/xp/xp.json"
+    else:
+        path = "assets/dev_bot/xp/xp.json"
+
+    with open(path, 'r+') as f:
         data = json.load(f)
 
         before = data[str(user)]
@@ -43,7 +52,12 @@ def set_amount(user, amount):
 def get_amount(user):
     user = user.id
 
-    with open("assets/bot/xp/xp.json", 'r') as f:
+    if not dev:
+        path = "assets/bot/xp/xp.json"
+    else:
+        path = "assets/dev_bot/xp/xp.json"
+
+    with open(path, 'r') as f:
         data = json.load(f)
 
     if str(user) not in data:
