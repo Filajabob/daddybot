@@ -6,6 +6,7 @@ class Constants:
         FRIEND_CODE_CLAIMER_XP = 2500  # XP the code claimer gets
 
         MESSAGE_XP = 25  # Amount of XP author gets for a message
+        DAILY_XP = 1000 # Amount of XP each day
 
     class Ranks:
         RANK_1 = 10000

@@ -1,4 +1,5 @@
 import json
+import random
 
 import datetime
 import discord
@@ -77,3 +78,21 @@ class EventCog(commands.Cog):
             f.seek(0)
             json.dump(data, f)
             f.truncate()
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        msgs = ["Here comes {}..!", "{} joined the game.", "I was hoping for Ryan Reynolds, but here's {}.",
+                "Hello {}! Hope you brought snacks.", ""]
+
+        updates = await self.client.fetch_channel(1022328541217566760)
+
+        await updates.send(random.choice(msgs).replace('{}', member.mention))
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        msgs = ["There goes {}. I never liked them anyway.", "Hey hey hey, goodbye {}", "{} left the game.",
+                "{} abandoned the match, and won't be spawned this round. Or ever. Unless they come back."]
+
+        updates = await self.client.fetch_channel(1022328541217566760)
+
+        await updates.send(random.choice(msgs).replace('{}', member.mention))
