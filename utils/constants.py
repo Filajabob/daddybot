@@ -8,9 +8,9 @@ class Constants:
         MESSAGE_XP = 20  # Amount of XP author gets for a message
         DAILY_XP = 1001 # Amount of XP each day
 
-        TRIVIA_CORRECT_EASY = 20  # Amount of XP for getting a true-or-false trivia question correct (easy)
-        TRIVIA_CORRECT_MED = 45
-        TRIVIA_CORRECT_HARD = 69
+        TRIVIA_CORRECT_EASY = 15  # Amount of XP for getting a true-or-false trivia question correct (easy)
+        TRIVIA_CORRECT_MED = 30
+        TRIVIA_CORRECT_HARD = 45
 
     class Ranks:
         RANK_1 = 10000
