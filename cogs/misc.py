@@ -21,7 +21,7 @@ class MiscCog(commands.Cog):
 
     @commands.slash_command(name="invite", description="Get the server's offical vanity link")
     async def invite(self, ctx):
-        await ctx.respond("<https://dsc.gg/memetopia>")
+        await ctx.respond(f"<{Constants.INVITE_LINK}>")
 
     @commands.slash_command(name="ping", description="Get the bot's latency")
     async def ping(self, ctx):
