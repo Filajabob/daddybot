@@ -88,7 +88,7 @@ class EventCog(commands.Cog):
     async def on_member_remove(self, member):
         msgs = ["There goes {}. I never liked them anyway.", "Hey hey hey, goodbye {}", "{} left the game.",
                 "{} abandoned the match, and won't be spawned this round. Or ever. Unless they come back.",
-                "Hey {} left. Here's a song that matches the vibe: https://www.youtube.com/watch?v=jsaTElBljOE"]
+                "Hey {} left. Here's a song that matches the vibe: <https://www.youtube.com/watch?v=jsaTElBljOE>"]
 
         updates = await self.client.fetch_channel(1022328541217566760)
 
