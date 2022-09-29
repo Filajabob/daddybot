@@ -2,10 +2,12 @@ assets/auth/
 !assets/auth/README.txt
 !assets/.gitkeep
 .idea/
-logs/
-!logs/.gitkeep
+logs/*
 
 **/__pycache__/
 *.pyc
 
 !**/.gitkeep
+
+assets/bot/friend_code/*
+assets/bot/xp/*
