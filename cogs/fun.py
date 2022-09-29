@@ -92,11 +92,11 @@ class FunCog(commands.Cog):
                     await inter.followup.send(f"That's correct! You got some XP.")
 
                     if difficulty == "Easy":
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY)
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(client))
                     elif difficulty == "Medium":
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED)
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(client))
                     else:
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD)
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(client))
 
                 else:
                     await inter.followup.send("That's wroooong! LOL")
