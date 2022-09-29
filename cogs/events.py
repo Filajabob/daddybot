@@ -1,5 +1,7 @@
 import json
 import random
+import logging
+import traceback
 
 import datetime
 import discord
@@ -9,6 +11,12 @@ import pytz
 
 import utils
 from utils.constants import Constants
+
+error_logs = logging.getLogger('errors')
+error_logs.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='logs/errors.log', encoding='utf-8', mode='a')
+handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(name)s: %(message)s'))
+error_logs.addHandler(handler)
 
 
 class EventCog(commands.Cog):
@@ -44,6 +52,8 @@ class EventCog(commands.Cog):
             return
 
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
+
+        error_logs.error("".join(traceback.format_exception(error)))
 
         bot_error_channel = await self.client.fetch_channel(1024057742496911420)
         now = datetime.datetime.now(pytz.UTC)

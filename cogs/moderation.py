@@ -63,3 +63,15 @@ class ModerationCog(commands.Cog):
 
         await ctx.respond(f"{member.mention} has been kicked.", ephemeral=True)
 
+    @commands.has_permissions(manage_guild=True)
+    @commands.slash_command(name="file", description="View the files in the bot. Admins only.")
+    async def file(self, ctx, filepath):
+        try:
+            file = discord.File(filepath)
+        except FileNotFoundError:
+            await ctx.respond("File was not found.", ephemeral=True)
+            return
+
+        await ctx.respond(f"Requested file **{filepath}** was found", file=file)
+
+

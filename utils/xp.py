@@ -1,6 +1,6 @@
 import json
 
-def add(user, amount, dev):
+def add(user, amount, dev, log=True):
     user = user.id
 
     if not dev:
