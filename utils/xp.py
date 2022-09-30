@@ -65,6 +65,6 @@ def get_amount(user, dev):
         data = json.load(f)
 
     if str(user) not in data:
-        return None
+        return 0
     else:
         return data[str(user)]
