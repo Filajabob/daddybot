@@ -289,3 +289,29 @@ class MiscCog(commands.Cog):
                                               "You can still get more XP.")
 
         await ctx.respond(embed=em)
+
+    @xp.command(name="leaderboard", description="See the kings and queens of the server.")
+    async def xp_leaderboard(self, ctx, max: Option(int, "Maximum amount of members to display")=10):
+        memetopia = await self.client.fetch_guild(1021919859203903488)
+        member_xp_list = []
+
+        async for member in memetopia.fetch_members(limit=None):
+            member_xp_list.append([member, utils.xp.get_amount(member, dev=utils.is_dev(self.client))])
+
+        def sort_key(member):
+            return member[1]
+
+        member_xp_list.sort(key=sort_key, reverse=True)
+
+        em = discord.Embed(title="XP Leaderboard", description="The kings and queens of the server.")
+
+        i = 1
+
+        for member, xp in member_xp_list:
+            if i > max or xp <= 0:
+                break
+
+            em.add_field(name=f"{i}.{member.name}", value=f"{xp} XP", inline=False)
+            i += 1
+
+        await ctx.respond(embed=em)

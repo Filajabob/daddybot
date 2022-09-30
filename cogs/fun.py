@@ -19,7 +19,7 @@ class FunCog(commands.Cog):
     quote = SlashCommandGroup("quote", "Get a quote")
 
     @quote.command(name="breaking-bad", description="Get a quote from the TV show Breaking Bad")
-    @commands.cooldown(1, 7, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def breaking_bad(self, ctx):
         url = "https://www.breakingbadapi.com/api/quote/random"
         r = json.loads(requests.get(url).content.decode())
@@ -27,7 +27,7 @@ class FunCog(commands.Cog):
         await ctx.respond(f"{r[0]['quote']}\n-{r[0]['author']}")
 
     @quote.command(name="the-office", description="Get a quote from the TV show The Office (US)")
-    @commands.cooldown(1, 7, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def the_office(self, ctx):
         with open("assets/bot/quotes/the-office/the-office-quotes.json", 'r') as f:
             data = json.load(f)
@@ -53,7 +53,7 @@ class FunCog(commands.Cog):
             await ctx.send(f"...{r[digit - 5:digit]}**{search}**{r[digit + len(search):digit + len(search) + 5]}...")
 
     @commands.slash_command(name="trivia", description="Answer trivia, get XP.")
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 20, commands.BucketType.user)
     async def trivia(self, ctx,
                      difficulty: Option(str, "Difficulty of the trivia question", choices=["Easy", "Medium", "Hard"])):
 
@@ -110,6 +110,32 @@ class FunCog(commands.Cog):
 
         await ctx.respond(embed=em, view=view)
 
+    @commands.slash_command(name="insult", description="Get insulted by the bot or insult someone else")
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def insult(self, ctx, victim: Option(discord.User, "User to insult, defaults to you.")=None):
+        url = "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+        insult = json.loads(requests.get(url).content.decode())["insult"]
 
+        if not victim:
+            await ctx.respond(insult)
+        else:
+            try:
+                await victim.send(f"{insult}\nDelivered by {ctx.author.mention}")
+                await ctx.respond(f"{victim.mention} has been insulted!")
+            except discord.Forbidden:
+                await ctx.respond("The insult couldn't be delivered due to the victim's DM settings.", ephemeral=True)
+                return
 
+        if random.randint(0, 6) == 1:
+            await ctx.send("Did you know? We get our insults from https://evilinsult.com.")
 
+    @commands.slash_command(name="doggo", description="Dogs are far superior to cats")
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def doggo(self, ctx):
+        url = "https://dog.ceo/api/breeds/image/random"
+        dog = json.loads(requests.get(url).content.decode())["message"]
+
+        await ctx.respond(dog)
+
+        if random.randint(0, 6) == 1:
+            await ctx.send("Did you know? We get our insults from https://dog.ceo.")
