@@ -80,6 +80,8 @@ class TaskCog(commands.Cog):
     @tasks.loop(minutes=5)
     async def presence_updater(self):
         await self.client.wait_until_ready()
+        memetopia = await self.client.fetch_guild(1021919859203903488)
+        members = await memetopia.fetch_members().flatten()
 
         with open("assets/bot/presences/presences.json", 'r') as f:
             data = json.load(f)
@@ -87,13 +89,18 @@ class TaskCog(commands.Cog):
         presence_category = random.choice(["gaming", "listening", "watching"])
 
         if presence_category == "gaming":
-            activity = discord.Game(name=random.choice(data[presence_category]))
+            activity = discord.Game(name=random.choice(data[presence_category]).replace("{ran member}",
+                                                                                       f"@{random.choice(members).name}"))
 
         elif presence_category == "listening":
-            activity = discord.Activity(type=discord.ActivityType.listening, name=random.choice(data[presence_category]))
+            activity = discord.Activity(type=discord.ActivityType.listening,
+                                        name=random.choice(data[presence_category]).replace("{ran member}",
+                                                                                       f"@{random.choice(members).name}"))
 
         else:
-            activity = discord.Activity(type=discord.ActivityType.watching, name=random.choice(data[presence_category]))
+            activity = discord.Activity(type=discord.ActivityType.watching,
+                                        name=random.choice(data[presence_category]).replace("{ran member}",
+                                                                                       f"@{random.choice(members).name}"))
 
         await self.client.change_presence(activity=activity)
 
