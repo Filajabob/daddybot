@@ -92,11 +92,11 @@ class FunCog(commands.Cog):
                     await inter.followup.send(f"That's correct! You got some XP.")
 
                     if difficulty == "Easy":
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(client))
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(self.client))
                     elif difficulty == "Medium":
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(client))
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(self.client))
                     else:
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(client))
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(self.client))
 
                 else:
                     await inter.followup.send("That's wroooong! LOL")
@@ -139,3 +139,16 @@ class FunCog(commands.Cog):
 
         if random.randint(0, 6) == 1:
             await ctx.send("Did you know? We get our insults from https://dog.ceo.")
+
+    @commands.slash_command(name="fortune-cookie", description="Get your daily fortune.")
+    @commands.cooldown(1, 24 * 60 * 60, commands.BucketType.user)
+    async def fortune_cookie(self, ctx):
+        with open("assets/bot/fortunes/fortunes.json", 'r') as f:
+            fortunes = json.load(f)
+
+        em = discord.Embed(title="Today's Fortune", description="Here's today's fortune", inline=False)
+        em.add_field(name="Fortune", value=random.choice(fortunes), inline=False)
+        em.add_field(name="Today's Lucky Number", value=random.randint(1, 99))
+        em.set_footer(text="Not actual fortunes.")
+
+        await ctx.respond(embed=em)
