@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord.ext import commands
 from discord.commands import Option
@@ -62,6 +64,72 @@ class ModerationCog(commands.Cog):
         await member.kick(reason=reason)
 
         await ctx.respond(f"{member.mention} has been kicked.", ephemeral=True)
+
+    @commands.has_permissions(moderate_members=True)
+    @commands.slash_command(name="timeout", description="Give someone a timeout.")
+    async def timeout(self, ctx,
+                      member: Option(discord.Member, "User to timeout"),
+                      reason: Option(str, "Reason for timeout")="No reason provided.",
+                      duration: Option(str, "Amount of time to timeout.", choices=["60 Secs", "5 Mins", "10 Mins",
+                                                                                   "1 Hour", "1 Day", "1 Week"])=None,
+                      seconds: Option(int, "Amount of secs to timeout.")=None):
+        if duration and seconds:
+            await ctx.respond("Must provide duration OR seconds, not both", ephemeral=True)
+            return
+
+        if not (duration, seconds):
+            await ctx.respond("Must provide duration OR seconds, not none", ephemeral=True)
+            return
+
+        em = discord.Embed(title="You were given a timeout in Memetopia", description="You were just given a timeout in "
+                                                                                      "the Memetopia server.")
+        em.add_field(name="Oof..",
+                     value="After consideration by the mods, you have been given a timeout in Memetopia. Don't cry.",
+                     inline=False)
+        em.add_field(name="Reason", value=reason, inline=False)
+
+        if duration:
+            em.add_field(name="Time Until Released", value=duration)
+
+            if duration == "60 Secs":
+                duration = datetime.timedelta(seconds=60)
+            elif duration == "5 Mins":
+                duration = datetime.timedelta(minutes=5)
+            elif duration == "10 Mins":
+                duration = datetime.timedelta(minutes=10)
+            elif duration == "1 Hour":
+                duration = datetime.timedelta(hours=1)
+            elif duration == "1 Day":
+                duration = datetime.timedelta(days=1)
+            elif duration == "1 Week":
+                duration = datetime.timedelta(weeks=1)
+
+        else:
+            em.add_field(name="Time Until Released", value=f"{seconds} Seconds")
+
+            duration = datetime.timedelta(seconds=seconds)
+
+        await ctx.respond(f"{member.mention} has been timed out.", ephemeral=True)
+
+        await member.send(embed=em)
+        await member.timeout_for(duration, reason=reason)
+
+    @commands.has_permissions(moderate_members=True)
+    @commands.slash_command(name="remove-timeout", description="Remove a timeout from someone.")
+    async def remove_timeout(self, ctx,
+                             member: Option(discord.Member, "Member to remove timeout from"),
+                             reason: Option(str, "Reason for timeout removal")):
+        em = discord.Embed(title="You were released from timeout!",
+                           description="You were released from a timeout in Memetopia!")
+        em.add_field(name="You're lucky!",
+                     value="After consideration by the mods, you were released from your timeout.",
+                     inline=False)
+        em.add_field(name="Reason", value=reason, inline=False)
+
+        await ctx.respond(f"{member.mention} has been released.", ephemeral=True)
+
+        await member.send(embed=em)
+        await member.remove_timeout(reason=reason)
 
     @commands.has_permissions(manage_guild=True)
     @commands.slash_command(name="file", description="View the files in the bot. Admins only.")
