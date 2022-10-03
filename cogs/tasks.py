@@ -75,7 +75,7 @@ class TaskCog(commands.Cog):
                 if not member.get_role(Ranks.RANK_5_ID):
                     await member.add_roles(rank5)
                     await member.remove_roles(rank1, rank2, rank3, rank4)
-                    await member.send("DAMN BRO... You got Rank V in Memetopia!")
+                    await member.send("DAMN BRO... You got Rank V in Memetopia! What the-")
 
     @tasks.loop(minutes=5)
     async def presence_updater(self):
