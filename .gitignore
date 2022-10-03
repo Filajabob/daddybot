@@ -11,3 +11,5 @@ logs/*
 
 assets/bot/friend_code/*
 assets/bot/xp/*
+
+assets/bot/stats/message_stats/*
