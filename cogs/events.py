@@ -84,6 +84,9 @@ class EventCog(commands.Cog):
         # Add XP to the author's total XP
         utils.xp.add(msg.author, Constants.XPSettings.MESSAGE_XP, dev=utils.is_dev(self.client))
 
+        # Add to statistics
+        utils.log_msg(msg, self.client)
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         msgs = ["Here comes {}..!", "{} joined the game.", "I was hoping for Ryan Reynolds, but here's {}.",
