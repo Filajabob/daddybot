@@ -23,6 +23,10 @@ class TaskCog(commands.Cog):
     # Assign the appropriate roles for people depending on their XP
     @tasks.loop(seconds=7.0)
     async def role_updater(self):
+        await self.client.wait_until_ready()
+
+        if utils.is_dev(self.client): return
+
         memetopia = await self.client.fetch_guild(1021919859203903488)
 
         rank1 = memetopia.get_role(Ranks.RANK_1_ID)

@@ -11,6 +11,7 @@ from cogs.fun import FunCog
 from cogs.music import MusicCog
 from cogs.tasks import TaskCog
 from cogs.moderation import ModerationCog
+from cogs.stats import StatsCog
 
 __version__ = "0.1.0"
 
@@ -38,6 +39,7 @@ client.add_cog(FunCog(client))
 client.add_cog(MusicCog(client))
 client.add_cog(TaskCog(client))
 client.add_cog(ModerationCog(client))
+client.add_cog(StatsCog(client))
 
 dev = input("Run the Developer bot? (y/N) ") == "y"
 
