@@ -31,7 +31,7 @@ class ModerationCog(commands.Cog):
         else:
             em.add_field(name="Moderator", value=f"You were banned by {ctx.author.mention}", inline=False)
 
-        em.add_field(name="Farewell..", value="Whatever you did, hope you have a good life. Adios!")
+        em.add_field(name="Farewell..", value="Whatever you did, hope you have a good life. Adios amigo!")
 
         await member.send(embed=em)
         await member.ban(delete_message_days=purge, reason=reason)
