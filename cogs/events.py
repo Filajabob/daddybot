@@ -109,3 +109,22 @@ class EventCog(commands.Cog):
         updates = await self.client.fetch_channel(1022328541217566760)
 
         await updates.send(random.choice(msgs).replace('{}', member.mention))
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        em = discord.Embed(title=f"{message.author.name}'s message got deleted",
+                              description="", timestamp=datetime.datetime.now(), color=discord.Color.red())
+        em.add_field(name="Message", value=f"||{message.content}||", inline=False)
+
+        channel = await self.client.fetch_channel(1026665929335119914)
+        await channel.send(embed=em)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, msg_before, msg_after):
+        em = discord.Embed(title=f"{msg_before.author.name} edited a message", timestamp=datetime.datetime.now(),
+                           color=discord.Color.blue())
+        em.add_field(name="Before", value=f"||{msg_before.content}||", inline=False)
+        em.add_field(name="After", value=msg_after.content, inline=False)
+
+        channel = await self.client.fetch_channel(1026665929335119914)
+        await channel.send(embed=em)
