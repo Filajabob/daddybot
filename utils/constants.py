@@ -25,3 +25,7 @@ class Constants:
         RANK_3_ID = 1022607191569600573
         RANK_4_ID = 1022607587595796490
         RANK_5_ID = 1021922977845104661
+
+    class MemeCoin:
+        TAX_PERCENTAGE = 0.042  # Percentage taken from a transfer
+        TAX_MINIMUM = 50  # Minimum transfer amount for tax to be applied

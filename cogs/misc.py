@@ -243,7 +243,8 @@ class MiscCog(commands.Cog):
 
     @commands.has_permissions(administrator=True)
     @xp.command(name="add", description="Add XP to a user")
-    async def xp_add(self, ctx, user: Option(discord.User, "User you want to edit"), amount: Option(int, "Amount of XP to add")):
+    async def xp_add(self, ctx, user: Option(discord.User, "User you want to edit"),
+                     amount: Option(int, "Amount of XP to add")):
         utils.xp.add(user, amount, dev=utils.is_dev(self.client))
         await ctx.respond("Added XP!", ephemeral=True)
 
