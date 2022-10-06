@@ -1,0 +1,2 @@
+class MissingFunds(Exception):
+    pass
