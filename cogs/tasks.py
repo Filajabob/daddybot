@@ -18,7 +18,7 @@ class TaskCog(commands.Cog):
 
         self.role_updater.start()
         self.presence_updater.start()
-        self.daily_xp.start()
+        self.daily.start()
         self.daily_stats.start()
 
     # Assign the appropriate roles for people depending on their XP
@@ -26,7 +26,8 @@ class TaskCog(commands.Cog):
     async def role_updater(self):
         await self.client.wait_until_ready()
 
-        if utils.is_dev(self.client): return
+        if utils.is_dev(self.client):
+            return
 
         memetopia = await self.client.fetch_guild(1021919859203903488)
 
@@ -111,14 +112,15 @@ class TaskCog(commands.Cog):
 
     # Run every day at midnight EST, or 4 AM UTC
     @tasks.loop(time=datetime.time(4, 0, 0))
-    async def daily_xp(self):
+    async def daily(self):
         await self.client.wait_until_ready()
         memetopia = await self.client.fetch_guild(1021919859203903488)
 
         async for member in memetopia.fetch_members(limit=None):
             utils.xp.add(member, Constants.XPSettings.DAILY_XP, dev=utils.is_dev(self.client))
+            utils.add_memecoin(member, Constants.MemeCoin.DAILY_MEMECOIN, self.client)
 
-    @tasks.loop(time=datetime.time(3, 59, 0))
+    @tasks.loop(time=datetime.time(3, 30, 0))
     async def daily_stats(self):
         await self.client.wait_until_ready()
         stats_channel = await self.client.fetch_channel(1026651753011236924)
