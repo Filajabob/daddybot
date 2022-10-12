@@ -7,7 +7,7 @@ class Constants:
         FRIEND_CODE_CLAIMER_XP = 3500  # XP the code claimer gets
 
         MESSAGE_XP = 20  # Amount of XP author gets for a message
-        DAILY_XP = 1001 # Amount of XP each day
+        DAILY_XP = 500 # Amount of XP each day
 
         TRIVIA_CORRECT_EASY = 25  # Amount of XP for getting a true-or-false trivia question correct (easy)
         TRIVIA_CORRECT_MED = 50

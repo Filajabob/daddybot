@@ -8,10 +8,10 @@ class MarketCog(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    market = SlashCommandGroup("market", "Interact with the Market")
+    memecoin = SlashCommandGroup("memecoin", "Interact with the MemeCoin network")
 
-    @market.command(name="transfer", description="Transfer MemeCoin to someone")
-    async def market_transfer(self, ctx, recipent: Option(discord.User, "User to transfer to"),
+    @memecoin.command(name="transfer", description="Transfer MemeCoin to someone")
+    async def memecoin_transfer(self, ctx, recipent: Option(discord.User, "User to transfer to"),
                               amount: Option(int, "Amount of MemeCoin to transfer")):
         try:
             tax = utils.transfer_memecoin(ctx.author, recipent, amount, self.client)
@@ -20,3 +20,25 @@ class MarketCog(commands.Cog):
             return
 
         await ctx.respond(f"Transferred MemeCoin. {tax} MemeCoin was taken for tax.")
+        await recipent.send(f"You were just transferred {amount - tax} MemeCoin from {ctx.author.mention}")
+
+    @commands.has_permissions(administrator=True)
+    @memecoin.command(name="add", description="Add MemeCoins to a user")
+    async def memecoin_add(self, ctx, user: Option(discord.User, "User you want to edit"),
+                     amount: Option(int, "Amount of XP to add")):
+        utils.add_memecoin(user, amount, dev=utils.is_dev(self.client))
+        await ctx.respond("Added MemeCoin!", ephemeral=True)
+
+    @commands.has_permissions(administrator=True)
+    @memecoin.command(name="subtract", description="Subtract MemeCoins from a user")
+    async def memecoin_subtract(self, ctx, user: Option(discord.User, "User you want to edit"),
+                          amount: Option(int, "Amount of XP to subtract")):
+        utils.subtract_memecoin(user, amount, dev=utils.is_dev(self.client))
+        await ctx.respond("Subtracted MemeCoin!", ephemeral=True)
+
+    @commands.has_permissions(administrator=True)
+    @memecoin.command(name="set", description="Set MemeCoins for a user")
+    async def memecoin_set(self, ctx, user: Option(discord.User, "User you want to edit"),
+                     amount: Option(int, "Amount of XP to add")):
+        utils.set_memecoin(user, amount, dev=utils.is_dev(self.client))
+        await ctx.respond("Set MemeCoin!", ephemeral=True)
