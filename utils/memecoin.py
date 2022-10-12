@@ -14,13 +14,13 @@ def add_memecoin(user: discord.User, amount: int, client: discord.ext.commands.B
     with open(path, 'r+') as f:
         data = json.load(f)
 
-        if (data[str(user.id)] + amount < 0) and not ignore_missing_funds:
-            raise MissingFunds(f"{user.mention} does not have enough MemeCoin.")
-
         if not str(user.id) in data:
             data[str(user.id)] = amount
         else:
             data[str(user.id)] += amount
+
+        if (data[str(user.id)] + amount < 0) and not ignore_missing_funds:
+            raise MissingFunds(f"{user.mention} does not have enough MemeCoin.")
 
         f.seek(0)
         json.dump(data, f)
@@ -46,6 +46,23 @@ def set_memecoin(user: discord.User, amount: int, client: discord.ext.commands.B
         f.seek(0)
         json.dump(data, f)
         f.truncate()
+
+def get_memecoin(user, client):
+    user = user.id
+
+    if not is_dev(client):
+        path = "assets/bot/memecoin/memecoin.json"
+    else:
+        path = "assets/dev_bot/memecoin/memecoin.json"
+
+    with open(path, 'r') as f:
+        data = json.load(f)
+
+    if str(user) not in data:
+        return 0
+    else:
+        return data[str(user)]
+
 
 def transfer_memecoin(sender: discord.User, recipent: discord.User, amount: int, client: discord.ext.commands.Bot, *,
              tax: float=Constants.MemeCoin.TAX_PERCENTAGE,

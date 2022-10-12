@@ -29,3 +29,9 @@ class Constants:
     class MemeCoin:
         TAX_PERCENTAGE = 0.042  # Percentage taken from a transfer
         TAX_MINIMUM = 50  # Minimum transfer amount for tax to be applied
+
+        DAILY_MEMECOIN = 50  # Amount of MemeCoin every day
+
+        TRIVIA_CORRECT_EASY = 5  # Amount of MemeCoin for getting a true-or-false trivia question correct (easy)
+        TRIVIA_CORRECT_MED = 10
+        TRIVIA_CORRECT_HARD = 20

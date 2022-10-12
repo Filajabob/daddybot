@@ -55,7 +55,8 @@ class FunCog(commands.Cog):
     @commands.slash_command(name="trivia", description="Answer trivia, get XP.")
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def trivia(self, ctx,
-                     difficulty: Option(str, "Difficulty of the trivia question", choices=["Easy", "Medium", "Hard"])):
+                     difficulty: Option(str, "Difficulty of the trivia question",
+                                        choices=["Easy", "Medium", "Hard"])="Medium"):
 
         if difficulty == "Easy":
             url = "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean"
@@ -89,14 +90,17 @@ class FunCog(commands.Cog):
 
             async def callback(self, inter):
                 if r['correct_answer'] == self.content:
-                    await inter.followup.send(f"That's correct! You got some XP.")
+                    await inter.followup.send(f"That's correct! You got some XP and some MemeCoin.")
 
                     if difficulty == "Easy":
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_EASY, self.client)
                     elif difficulty == "Medium":
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_MED, self.client)
                     else:
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_HARD, self.client)
 
                 else:
                     await inter.followup.send("That's wroooong! LOL")
