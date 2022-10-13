@@ -1,6 +1,8 @@
 import json
 import random
 import asyncio
+import time
+import datetime
 
 import requests
 
@@ -210,8 +212,9 @@ class FunCog(commands.Cog):
             await asyncio.sleep(3)
 
             if random.randint(1, 6) == 1:
-                await game_msg.edit(f"**BANG! You won.** Here's your **{wager}** MemeCoins.")
+                await game_msg.edit(f"**BANG! You won.** Here's your **{wager}** MemeCoins. You got some XP as well.")
                 utils.add_memecoin(ctx.author, wager, self.client)
+                utils.xp.add(ctx.author, Constants.XPSettings.RUS_ROULETTE_XP, dev=utils.is_dev(self.client))
                 break
             else:
                 await game_msg.edit("The Memevolver fired a blank.")
@@ -226,3 +229,67 @@ class FunCog(commands.Cog):
                 pass
 
             await game_msg.edit(view=None)
+
+    @commands.slash_command(name="fast-math", description="Answer multiplication questions for XP and MemeCoin.")
+    async def fast_math(self, ctx, questions: Option(int, "Amount of questions to complete")):
+        def check(msg):
+            return msg.author.id == ctx.author.id
+
+        await ctx.respond("Five seconds to answer a question: send your answer in the chat.\n"
+                          "Takes longer than five seconds? The game will move on.\n"
+                          "To abort, send 'abort', any other non-integer message will be counted as wrong")
+        await asyncio.sleep(7)
+
+        total_xp = 0
+        total_mc = 0
+        correct = 0
+
+        game_msg = await ctx.send("There should be a math question here.")
+
+        for i in range(questions):
+            num1 = random.randint(1, 12)
+            num2 = random.randint(1, 12)
+
+            await game_msg.edit(f"**#{i + 1}** {num1} × {num2}")
+
+            try:
+                msg = await self.client.wait_for("message", check=check, timeout=Constants.FAST_MATH_MAX_ANSWER_TIME)
+            except asyncio.exceptions.TimeoutError:
+                continue
+
+            if msg.content.lower() == 'abort':
+                await ctx.send("Aborted the game.")
+                return
+
+            if not msg.content.isdigit():
+                await msg.delete()
+                continue
+
+            player_ans = int(msg.content)
+            true_ans = num1 * num2
+
+            if player_ans == true_ans:
+                total_xp += Constants.XPSettings.FAST_MATH_QUESTION_XP
+                total_mc += Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN
+                correct += 1
+
+            await msg.delete()
+
+        await game_msg.delete()
+
+        if correct == questions and questions >= Constants.FAST_MATH_MINIMUM_ACE:
+            total_xp += total_xp * Constants.XPSettings.FAST_MATH_ACE_XP
+            total_mc += total_mc * Constants.MemeCoin.FAST_MATH_ACE_MEMECOIN
+
+        utils.xp.add(ctx.author, total_xp, self.client)
+        utils.add_memecoin(ctx.author, total_mc, self.client)
+
+        em = discord.Embed(title="Fast Math Recap", description="Your results", timestamp=datetime.datetime.now())
+        em.add_field(name="Correct", value=correct, inline=False)
+        em.add_field(name="Incorrect", value=questions - correct, inline=False)
+        em.add_field(name="Total Questions", value=questions, inline=False)
+        em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
+        em.add_field(name="XP Earnings", value=total_xp, inline=False)
+        em.add_field(name="MemeCoin Earnings", value=total_mc, inline=False)
+
+        await ctx.send(embed=em)

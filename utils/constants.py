@@ -1,6 +1,9 @@
 class Constants:
     MAX_CLAIM_TIME = 1800  # Max time to claim a code, in seconds
     INVITE_LINK = "https://dsc.gg/memetopia"
+    FAST_MATH_MINIMUM_ACE = 10  # Minimum amount of questions to get an ace. This is to prevent playing Fast Math
+                                # with only one question, getting it right, and getting the bonus.
+    FAST_MATH_MAX_ANSWER_TIME = 5  # Number of seconds to answer a Fast Math question
 
     class XPSettings:
         FRIEND_CODE_XP = 5500  # XP the code creator gets
@@ -12,6 +15,12 @@ class Constants:
         TRIVIA_CORRECT_EASY = 25  # Amount of XP for getting a true-or-false trivia question correct (easy)
         TRIVIA_CORRECT_MED = 50
         TRIVIA_CORRECT_HARD = 69
+
+        RUS_ROULETTE_XP = 100  # Amount of XP to give for winning Russian Roulette
+
+        FAST_MATH_QUESTION_XP = 10  # Amount of XP for answering a Fast Math question successfully.
+        FAST_MATH_ACE_XP = 0.25  # Bonus XP to award to someone for getting all questions correct.
+
 
     class Ranks:
         RANK_1 = 10000
@@ -35,3 +44,6 @@ class Constants:
         TRIVIA_CORRECT_EASY = 5  # Amount of MemeCoin for getting a true-or-false trivia question correct (easy)
         TRIVIA_CORRECT_MED = 10
         TRIVIA_CORRECT_HARD = 20
+
+        FAST_MATH_QUESTION_MEMECOIN = 2  # See Constants.XPSettings.FAST_MATH_QUESTION_XP
+        FAST_MATH_ACE_MEMECOIN = 0.25  # See Constants.XPSettings.FAST_MATH_ACE_XP
