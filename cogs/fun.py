@@ -1,5 +1,8 @@
 import json
 import random
+import asyncio
+import time
+import datetime
 
 import requests
 
@@ -55,7 +58,8 @@ class FunCog(commands.Cog):
     @commands.slash_command(name="trivia", description="Answer trivia, get XP.")
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def trivia(self, ctx,
-                     difficulty: Option(str, "Difficulty of the trivia question", choices=["Easy", "Medium", "Hard"])):
+                     difficulty: Option(str, "Difficulty of the trivia question",
+                                        choices=["Easy", "Medium", "Hard"])="Medium"):
 
         if difficulty == "Easy":
             url = "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean"
@@ -89,14 +93,17 @@ class FunCog(commands.Cog):
 
             async def callback(self, inter):
                 if r['correct_answer'] == self.content:
-                    await inter.followup.send(f"That's correct! You got some XP.")
+                    await inter.followup.send(f"That's correct! You got some XP and some MemeCoin.")
 
                     if difficulty == "Easy":
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_EASY, self.client)
                     elif difficulty == "Medium":
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_MED, self.client)
                     else:
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(self.client))
+                        utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_HARD, self.client)
 
                 else:
                     await inter.followup.send("That's wroooong! LOL")
@@ -146,9 +153,143 @@ class FunCog(commands.Cog):
         with open("assets/bot/fortunes/fortunes.json", 'r') as f:
             fortunes = json.load(f)
 
-        em = discord.Embed(title="Today's Fortune", description="Here's today's fortune", inline=False)
+        em = discord.Embed(title="Today's Fortune", description="Here's today's fortune")
         em.add_field(name="Fortune", value=random.choice(fortunes), inline=False)
-        em.add_field(name="Today's Lucky Number", value=random.randint(1, 99))
+        em.add_field(name="Today's Lucky Number", value=random.randint(1, 99), inline=False)
         em.set_footer(text="Not actual fortunes.")
 
         await ctx.respond(embed=em)
+
+
+    @commands.slash_command(name="russian-roulette", description="Play some Russian Roulette with me.")
+    async def russian_roulette(self, ctx, wager: Option(int, "Amount of MemeCoins to wager")=0):
+        if utils.get_memecoin(ctx.author, self.client) < wager:
+            await ctx.respond("You're too poor to play with that wager.")
+
+        class RussianRouletteView(View):
+            def __init__(self, author):
+                self.author = author
+                super().__init__()
+
+            async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
+                if inter.user.id != self.author.id:
+                    await inter.response.send_message(content="You don't have permission to press this button.",
+                                                  ephemeral=True)
+                    return False
+
+                return True
+
+            @discord.ui.button(label="Bail", style=discord.ButtonStyle.red)
+            async def bail_callback(self, button, interaction):
+                pass
+
+        def check(inter):
+            print(inter.data)
+            return inter.data["component_type"] == 2 and inter.message.id == game_msg.id
+
+        playing = True
+
+        await ctx.respond(f"Started a game of Russian Roulette with a wager of **{wager}** MemeCoins.")
+        game_msg = await ctx.send("Get ready for Russian Roulette!")
+
+        while playing:
+            await asyncio.sleep(3)
+            await game_msg.edit("You spin the barrel...")
+            await asyncio.sleep(3)
+
+            if random.randint(1, 6) == 1:
+                await game_msg.edit(f"**BANG! You lost.** You were severely injured, and you paid me **{wager}** MemeCoins to be saved.")
+                utils.subtract_memecoin(ctx.author, wager, self.client)
+                break
+            else:
+                await game_msg.edit("The Memevolver fired a blank.")
+
+            await asyncio.sleep(3)
+
+            # Do the same for the bot
+
+            await game_msg.edit("I spin the barrel...")
+            await asyncio.sleep(3)
+
+            if random.randint(1, 6) == 1:
+                await game_msg.edit(f"**BANG! You won.** Here's your **{wager}** MemeCoins. You got some XP as well.")
+                utils.add_memecoin(ctx.author, wager, self.client)
+                utils.xp.add(ctx.author, Constants.XPSettings.RUS_ROULETTE_XP, dev=utils.is_dev(self.client))
+                break
+            else:
+                await game_msg.edit("The Memevolver fired a blank.")
+
+            await game_msg.edit(content="Moving to the next round... (5s)", view=RussianRouletteView(ctx.author))
+
+            try:
+                inter = await self.client.wait_for("interaction", check=check, timeout=5)
+                await game_msg.edit("The game was bailed.")
+                break
+            except asyncio.exceptions.TimeoutError:
+                pass
+
+            await game_msg.edit(view=None)
+
+    @commands.slash_command(name="fast-math", description="Answer multiplication questions for XP and MemeCoin.")
+    async def fast_math(self, ctx, questions: Option(int, "Amount of questions to complete")):
+        def check(msg):
+            return msg.author.id == ctx.author.id
+
+        await ctx.respond("Five seconds to answer a question: send your answer in the chat.\n"
+                          "Takes longer than five seconds? The game will move on.\n"
+                          "To abort, send 'abort', any other non-integer message will be counted as wrong")
+        await asyncio.sleep(7)
+
+        total_xp = 0
+        total_mc = 0
+        correct = 0
+
+        game_msg = await ctx.send("There should be a math question here.")
+
+        for i in range(questions):
+            num1 = random.randint(1, 12)
+            num2 = random.randint(1, 12)
+
+            await game_msg.edit(f"**#{i + 1}** {num1} × {num2}")
+
+            try:
+                msg = await self.client.wait_for("message", check=check, timeout=Constants.FAST_MATH_MAX_ANSWER_TIME)
+            except asyncio.exceptions.TimeoutError:
+                continue
+
+            if msg.content.lower() == 'abort':
+                await ctx.send("Aborted the game.")
+                return
+
+            if not msg.content.isdigit():
+                await msg.delete()
+                continue
+
+            player_ans = int(msg.content)
+            true_ans = num1 * num2
+
+            if player_ans == true_ans:
+                total_xp += Constants.XPSettings.FAST_MATH_QUESTION_XP
+                total_mc += Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN
+                correct += 1
+
+            await msg.delete()
+
+        await game_msg.delete()
+
+        if correct == questions and questions >= Constants.FAST_MATH_MINIMUM_ACE:
+            total_xp += total_xp * Constants.XPSettings.FAST_MATH_ACE_XP
+            total_mc += total_mc * Constants.MemeCoin.FAST_MATH_ACE_MEMECOIN
+
+        utils.xp.add(ctx.author, total_xp, self.client)
+        utils.add_memecoin(ctx.author, total_mc, self.client)
+
+        em = discord.Embed(title="Fast Math Recap", description="Your results", timestamp=datetime.datetime.now())
+        em.add_field(name="Correct", value=correct, inline=False)
+        em.add_field(name="Incorrect", value=questions - correct, inline=False)
+        em.add_field(name="Total Questions", value=questions, inline=False)
+        em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
+        em.add_field(name="XP Earnings", value=total_xp, inline=False)
+        em.add_field(name="MemeCoin Earnings", value=total_mc, inline=False)
+
+        await ctx.send(embed=em)
