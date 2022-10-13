@@ -27,7 +27,7 @@ class TaskCog(commands.Cog):
         await self.client.wait_until_ready()
 
         if utils.is_dev(self.client):
-            return
+           return
 
         memetopia = await self.client.fetch_guild(1021919859203903488)
 
@@ -46,42 +46,60 @@ class TaskCog(commands.Cog):
             if xp < Ranks.RANK_1:
                 if member.get_role(Ranks.RANK_1_ID):
                     await member.remove_roles(rank1, rank2, rank3, rank4, rank5, reason="Lost too much XP to remain ranked")
-                    await member.send("You lost Rank I because you don't have enough XP.")
+                    try:
+                        await member.send("You lost Rank I because you don't have enough XP.")
+                    except discord.HTTPException:
+                        pass
 
             if Ranks.RANK_1 <= xp < Ranks.RANK_2:
                 # Member should have rank 1 but doesn't
                 if not member.get_role(Ranks.RANK_1_ID):
                     await member.add_roles(rank1)
                     await member.remove_roles(rank2, rank3, rank4, rank5)
-                    await member.send("Congratulations! You got Rank I in Memetopia!")
+                    try:
+                        await member.send("Congratulations! You got Rank I in Memetopia!")
+                    except discord.HTTPException:
+                        pass
 
             elif Ranks.RANK_2 <= xp < Ranks.RANK_3:
                 # Member should have rank 2 but doesn't
                 if not member.get_role(Ranks.RANK_2_ID):
                     await member.add_roles(rank2)
                     await member.remove_roles(rank1, rank3, rank4, rank5)
-                    await member.send("Congratulations! You got Rank II in Memetopia!")
+                    try:
+                        await member.send("Congratulations! You got Rank II in Memetopia!")
+                    except discord.HTTPException:
+                        pass
 
             elif Ranks.RANK_3 <= xp < Ranks.RANK_4:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_3_ID):
                     await member.add_roles(rank3)
                     await member.remove_roles(rank1, rank2, rank4, rank5)
-                    await member.send("Congratulations! You got Rank III in Memetopia!")
+                    try:
+                        await member.send("Congratulations! You got Rank III in Memetopia!")
+                    except discord.HTTPException:
+                        pass
 
             elif Ranks.RANK_4 <= xp < Ranks.RANK_5:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_4_ID):
                     await member.add_roles(rank4)
                     await member.remove_roles(rank1, rank2, rank3, rank5)
-                    await member.send("Congratulations! You got Rank IV in Memetopia!")
+                    try:
+                        await member.send("Congratulations! You got Rank IV in Memetopia!")
+                    except discord.HTTPException:
+                        pass
 
             elif xp >= Ranks.RANK_5:
                 # Member should have rank but doesn't
                 if not member.get_role(Ranks.RANK_5_ID):
                     await member.add_roles(rank5)
                     await member.remove_roles(rank1, rank2, rank3, rank4)
-                    await member.send("DAMN BRO... You got Rank V in Memetopia! What the-")
+                    try:
+                        await member.send("DAMN.. you just got Rank V in the Memetopia server!")
+                    except discord.HTTPException:
+                        pass
 
     @tasks.loop(minutes=5)
     async def presence_updater(self):
