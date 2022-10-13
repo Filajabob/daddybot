@@ -1,5 +1,6 @@
 import json
 import random
+import asyncio
 
 import requests
 
@@ -150,9 +151,78 @@ class FunCog(commands.Cog):
         with open("assets/bot/fortunes/fortunes.json", 'r') as f:
             fortunes = json.load(f)
 
-        em = discord.Embed(title="Today's Fortune", description="Here's today's fortune", inline=False)
+        em = discord.Embed(title="Today's Fortune", description="Here's today's fortune")
         em.add_field(name="Fortune", value=random.choice(fortunes), inline=False)
-        em.add_field(name="Today's Lucky Number", value=random.randint(1, 99))
+        em.add_field(name="Today's Lucky Number", value=random.randint(1, 99), inline=False)
         em.set_footer(text="Not actual fortunes.")
 
         await ctx.respond(embed=em)
+
+
+    @commands.slash_command(name="russian-roulette", description="Play some Russian Roulette with me.")
+    async def russian_roulette(self, ctx, wager: Option(int, "Amount of MemeCoins to wager")=0):
+        if utils.get_memecoin(ctx.author, self.client) < wager:
+            await ctx.respond("You're too poor to play with that wager.")
+
+        class RussianRouletteView(View):
+            def __init__(self, author):
+                self.author = author
+                super().__init__()
+
+            async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
+                if inter.user.id != self.author.id:
+                    await inter.response.send_message(content="You don't have permission to press this button.",
+                                                  ephemeral=True)
+                    return False
+
+                return True
+
+            @discord.ui.button(label="Bail", style=discord.ButtonStyle.red)
+            async def bail_callback(self, button, interaction):
+                pass
+
+        def check(inter):
+            print(inter.data)
+            return inter.data["component_type"] == 2 and inter.message.id == game_msg.id
+
+        playing = True
+
+        await ctx.respond(f"Started a game of Russian Roulette with a wager of **{wager}** MemeCoins.")
+        game_msg = await ctx.send("Get ready for Russian Roulette!")
+
+        while playing:
+            await asyncio.sleep(3)
+            await game_msg.edit("You spin the barrel...")
+            await asyncio.sleep(3)
+
+            if random.randint(1, 6) == 1:
+                await game_msg.edit(f"**BANG! You lost.** You were severely injured, and you paid me **{wager}** MemeCoins to be saved.")
+                utils.subtract_memecoin(ctx.author, wager, self.client)
+                break
+            else:
+                await game_msg.edit("The Memevolver fired a blank.")
+
+            await asyncio.sleep(3)
+
+            # Do the same for the bot
+
+            await game_msg.edit("I spin the barrel...")
+            await asyncio.sleep(3)
+
+            if random.randint(1, 6) == 1:
+                await game_msg.edit(f"**BANG! You won.** Here's your **{wager}** MemeCoins.")
+                utils.add_memecoin(ctx.author, wager, self.client)
+                break
+            else:
+                await game_msg.edit("The Memevolver fired a blank.")
+
+            await game_msg.edit(content="Moving to the next round... (5s)", view=RussianRouletteView(ctx.author))
+
+            try:
+                inter = await self.client.wait_for("interaction", check=check, timeout=5)
+                await game_msg.edit("The game was bailed.")
+                break
+            except asyncio.exceptions.TimeoutError:
+                pass
+
+            await game_msg.edit(view=None)
