@@ -1,7 +1,7 @@
 class Constants:
     MAX_CLAIM_TIME = 1800  # Max time to claim a code, in seconds
     INVITE_LINK = "https://dsc.gg/memetopia"
-    FAST_MATH_MINIMUM_ACE = 10  # Minimum amount of questions to get an ace. This is to prevent playing Fast Math
+    FAST_MATH_MINIMUM_ACE = 15  # Minimum amount of questions to get an ace. This is to prevent playing Fast Math
                                 # with only one question, getting it right, and getting the bonus.
     FAST_MATH_MAX_ANSWER_TIME = 5  # Number of seconds to answer a Fast Math question
 
