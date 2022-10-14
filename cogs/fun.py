@@ -49,7 +49,6 @@ class FunCog(commands.Cog):
             await ctx.respond(f"{search} was not found within the first ten million digits of Pi.")
             return
 
-
         await ctx.respond(f"**{search}** starts at digit **{digit + 2}**.\n")
 
         if (not digit - 5 <= 0) and (not digit + 5 > len(r)):
@@ -59,7 +58,7 @@ class FunCog(commands.Cog):
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def trivia(self, ctx,
                      difficulty: Option(str, "Difficulty of the trivia question",
-                                        choices=["Easy", "Medium", "Hard"])="Medium"):
+                                        choices=["Easy", "Medium", "Hard"]) = "Medium"):
 
         if difficulty == "Easy":
             url = "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean"
@@ -78,7 +77,7 @@ class FunCog(commands.Cog):
             async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
                 if inter.user.id != self.author.id:
                     await inter.response.send_message(content="You don't have permission to press this button.",
-                                                  ephemeral=True)
+                                                      ephemeral=True)
                     return False
 
                 self.disable_all_items()
@@ -96,13 +95,15 @@ class FunCog(commands.Cog):
                     await inter.followup.send(f"That's correct! You got some XP and some MemeCoin.")
 
                     if difficulty == "Easy":
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY, dev=utils.is_dev(self.client))
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_EASY,
+                                     dev=utils.is_dev(self.client))
                         utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_EASY, self.client)
                     elif difficulty == "Medium":
                         utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_MED, dev=utils.is_dev(self.client))
                         utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_MED, self.client)
                     else:
-                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD, dev=utils.is_dev(self.client))
+                        utils.xp.add(inter.user, Constants.XPSettings.TRIVIA_CORRECT_HARD,
+                                     dev=utils.is_dev(self.client))
                         utils.add_memecoin(inter.user, Constants.MemeCoin.TRIVIA_CORRECT_HARD, self.client)
 
                 else:
@@ -119,7 +120,7 @@ class FunCog(commands.Cog):
 
     @commands.slash_command(name="insult", description="Get insulted by the bot or insult someone else")
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def insult(self, ctx, victim: Option(discord.User, "User to insult, defaults to you.")=None):
+    async def insult(self, ctx, victim: Option(discord.User, "User to insult, defaults to you.") = None):
         url = "https://evilinsult.com/generate_insult.php?lang=en&type=json"
         insult = json.loads(requests.get(url).content.decode())["insult"]
 
@@ -160,9 +161,8 @@ class FunCog(commands.Cog):
 
         await ctx.respond(embed=em)
 
-
     @commands.slash_command(name="russian-roulette", description="Play some Russian Roulette with me.")
-    async def russian_roulette(self, ctx, wager: Option(int, "Amount of MemeCoins to wager")=0):
+    async def russian_roulette(self, ctx, wager: Option(int, "Amount of MemeCoins to wager") = 0):
         if utils.get_memecoin(ctx.author, self.client) < wager:
             await ctx.respond("You're too poor to play with that wager.")
 
@@ -174,7 +174,7 @@ class FunCog(commands.Cog):
             async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
                 if inter.user.id != self.author.id:
                     await inter.response.send_message(content="You don't have permission to press this button.",
-                                                  ephemeral=True)
+                                                      ephemeral=True)
                     return False
 
                 return True
@@ -193,12 +193,18 @@ class FunCog(commands.Cog):
         game_msg = await ctx.send("Get ready for Russian Roulette!")
 
         while playing:
-            await asyncio.sleep(3)
-            await game_msg.edit("You spin the barrel...")
-            await asyncio.sleep(3)
+
+            for i in range(1, random.randint(3, 4)):
+                await game_msg.edit("You spin the barrel.")
+                await asyncio.sleep(0.2)
+                await game_msg.edit("You spin the barrel..")
+                await asyncio.sleep(0.2)
+                await game_msg.edit("You spin the barrel...")
+                await asyncio.sleep(0.2)
 
             if random.randint(1, 6) == 1:
-                await game_msg.edit(f"**BANG! You lost.** You were severely injured, and you paid me **{wager}** MemeCoins to be saved.")
+                await game_msg.edit(
+                    f"**BANG! You lost.** You were severely injured, and you paid me **{wager}** MemeCoins to be saved.")
                 utils.subtract_memecoin(ctx.author, wager, self.client)
                 break
             else:
@@ -245,10 +251,13 @@ class FunCog(commands.Cog):
         correct = 0
 
         game_msg = await ctx.send("There should be a math question here.")
+        streak_msg = await ctx.send("")
 
         for i in range(questions):
             num1 = random.randint(1, 12)
             num2 = random.randint(1, 12)
+            streak = 0
+            highest_streak = 0
 
             await game_msg.edit(f"**#{i + 1}** {num1} × {num2}")
 
@@ -269,9 +278,19 @@ class FunCog(commands.Cog):
             true_ans = num1 * num2
 
             if player_ans == true_ans:
-                total_xp += Constants.XPSettings.FAST_MATH_QUESTION_XP
+                streak += 1
+                if streak >= 3:
+                    total_xp += round(Constants.XPSettings.FAST_MATH_QUESTION_XP * ((streak * 0.15) + 1))
+                    total_mc += round(Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN * ((streak * 0.15) + 1))
+                    await streak_msg.edit(f"Streak of **{streak}** questions in a row! 🔥")
+                else:
+                    total_xp += Constants.XPSettings.FAST_MATH_QUESTION_XP
                 total_mc += Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN
                 correct += 1
+
+            else:
+                highest_streak = streak
+                streak = 0  # Resets the streak once getting a question wrong
 
             await msg.delete()
 
@@ -280,6 +299,7 @@ class FunCog(commands.Cog):
         if correct == questions and questions >= Constants.FAST_MATH_MINIMUM_ACE:
             total_xp += total_xp * Constants.XPSettings.FAST_MATH_ACE_XP
             total_mc += total_mc * Constants.MemeCoin.FAST_MATH_ACE_MEMECOIN
+            highest_streak = streak
 
         utils.xp.add(ctx.author, total_xp, self.client)
         utils.add_memecoin(ctx.author, total_mc, self.client)
@@ -288,8 +308,12 @@ class FunCog(commands.Cog):
         em.add_field(name="Correct", value=correct, inline=False)
         em.add_field(name="Incorrect", value=questions - correct, inline=False)
         em.add_field(name="Total Questions", value=questions, inline=False)
-        em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
+        if round(correct / questions * 100, 2) != 100:
+            em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
+        else:
+            em.add_field(name="Percentage", value="💯💯💯💯", inline=False)
         em.add_field(name="XP Earnings", value=total_xp, inline=False)
         em.add_field(name="MemeCoin Earnings", value=total_mc, inline=False)
+        em.add_field(name="Highest Streak", value=highest_streak, inline=False)
 
         await ctx.send(embed=em)
