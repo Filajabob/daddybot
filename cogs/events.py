@@ -35,6 +35,8 @@ class EventCog(commands.Cog):
         elif isinstance(error, commands.MissingPermissions):
             await ctx.respond(f"Don't overstep boundaries! {str(error)}")
             return
+        elif isinstance(error, utils.errors.MissingFunds):
+            await ctx.respond("You don't have enough funds for that.")
 
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
 
