@@ -1,16 +1,21 @@
 import datetime
+import json
 
 import discord
 from discord.ext import commands
 from discord.commands import Option, SlashCommandGroup
+from discord.ui import View
 
 import utils
+from utils import Constants
+import objs
 
 class MarketCog(commands.Cog):
     def __init__(self, client):
         self.client = client
 
     memecoin = SlashCommandGroup("memecoin", "Interact with the MemeCoin network")
+    market = SlashCommandGroup("market", "Interact with the Meme Market")
 
     @memecoin.command(name="transfer", description="Transfer MemeCoin to someone")
     async def memecoin_transfer(self, ctx, recipent: Option(discord.User, "User to transfer to"),
@@ -55,3 +60,43 @@ class MarketCog(commands.Cog):
                      amount: Option(int, "Amount of XP to add")):
         utils.set_memecoin(user, amount, self.client)
         await ctx.respond("Set MemeCoin!", ephemeral=True)
+
+    @market.command(name="shop", description="Check out the generic item shop")
+    async def market_shop(self, ctx):
+        client = self.client
+
+        with open("assets/bot/market/items/generic.json", 'r') as f:
+            items = json.load(f)
+
+        options = []
+        for id, item in items.items():
+            options.append(
+                discord.SelectOption(
+                    label=f"{item['name']} ({item['cost']} MC)",
+                    description=item["description"],
+                    value=id
+                )
+            )
+
+        class ShopView(View):
+            @discord.ui.select(
+                placeholder="Pick an item to buy",
+                min_values=0,
+                max_values=1,
+                options=options,
+            )
+            async def select_callback(self, select, inter):
+                if select.values[0] == "xp":
+                    xp_bundle = objs.XP.default(ctx.author)
+                    utils.subtract_memecoin(ctx.author, Constants.Market.XP_BUNDLE_COST, client)
+                    utils.xp.add_xp_from_market(xp_bundle, client)
+
+                else:
+                    # for future items
+                    pass
+
+                self.disable_all_items()
+                await inter.response.send_message("Successfully purchased item!")
+
+
+        await ctx.respond("Buy something from the menu:", view=ShopView())

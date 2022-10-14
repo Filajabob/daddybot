@@ -1,4 +1,7 @@
 import json
+import objs
+from .is_dev import is_dev
+from .constants import Constants
 
 def add(user, amount, dev):
     user = user.id
@@ -68,3 +71,6 @@ def get_amount(user, dev):
         return 0
     else:
         return data[str(user)]
+
+def add_xp_from_market(xp_item: objs.XP, client):
+    return add(xp_item.owner, Constants.Market.XP_BUNDLE_SIZE, is_dev(client))
