@@ -1,0 +1,8 @@
+{
+  "xp": {
+    "name": "200 XP",
+    "description": "200 XP to level up.",
+    "cost": 10,
+    "image_path": null
+  }
+}

@@ -1,3 +1,5 @@
+import json
+
 class Constants:
     MAX_CLAIM_TIME = 1800  # Max time to claim a code, in seconds
     INVITE_LINK = "https://dsc.gg/memetopia"
@@ -47,3 +49,9 @@ class Constants:
 
         FAST_MATH_QUESTION_MEMECOIN = 2  # See Constants.XPSettings.FAST_MATH_QUESTION_XP
         FAST_MATH_ACE_MEMECOIN = 0.25  # See Constants.XPSettings.FAST_MATH_ACE_XP
+
+    class Market:
+        XP_BUNDLE_SIZE = 200  # Amount of XP to sell at once. Must also change assets/bot/items.generic.json to change this.
+
+        with open("assets/bot/market/items/generic.json", 'r') as f:
+            XP_BUNDLE_COST = json.load(f)["xp"]["cost"]
