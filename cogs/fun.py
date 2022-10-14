@@ -146,7 +146,7 @@ class FunCog(commands.Cog):
         await ctx.respond(dog)
 
         if random.randint(0, 6) == 1:
-            await ctx.send("Did you know? We get our insults from https://dog.ceo.")
+            await ctx.send("Did you know? We get our doggos from https://dog.ceo.")
 
     @commands.slash_command(name="fortune-cookie", description="Get your daily fortune.")
     @commands.cooldown(1, 24 * 60 * 60, commands.BucketType.user)
@@ -250,14 +250,16 @@ class FunCog(commands.Cog):
         total_mc = 0
         correct = 0
 
+        streak = 0
+        highest_streak = 0
+
+        streak_msg = await ctx.send("Your streak will appear here.")
         game_msg = await ctx.send("There should be a math question here.")
-        streak_msg = await ctx.send("")
 
         for i in range(questions):
             num1 = random.randint(1, 12)
             num2 = random.randint(1, 12)
-            streak = 0
-            highest_streak = 0
+
 
             await game_msg.edit(f"**#{i + 1}** {num1} × {num2}")
 
@@ -289,7 +291,8 @@ class FunCog(commands.Cog):
                 correct += 1
 
             else:
-                highest_streak = streak
+                if highest_streak < streak:
+                    highest_streak = streak
                 streak = 0  # Resets the streak once getting a question wrong
 
             await msg.delete()
@@ -308,10 +311,12 @@ class FunCog(commands.Cog):
         em.add_field(name="Correct", value=correct, inline=False)
         em.add_field(name="Incorrect", value=questions - correct, inline=False)
         em.add_field(name="Total Questions", value=questions, inline=False)
+
         if round(correct / questions * 100, 2) != 100:
             em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
         else:
             em.add_field(name="Percentage", value="💯💯💯💯", inline=False)
+
         em.add_field(name="XP Earnings", value=total_xp, inline=False)
         em.add_field(name="MemeCoin Earnings", value=total_mc, inline=False)
         em.add_field(name="Highest Streak", value=highest_streak, inline=False)
