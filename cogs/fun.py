@@ -295,6 +295,9 @@ class FunCog(commands.Cog):
                     highest_streak = streak
                 streak = 0  # Resets the streak once getting a question wrong
 
+            if highest_streak < streak:
+                highest_streak = streak
+
             await msg.delete()
 
         await game_msg.delete()
