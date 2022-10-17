@@ -146,7 +146,7 @@ class FunCog(commands.Cog):
         await ctx.respond(dog)
 
         if random.randint(0, 6) == 1:
-            await ctx.send("Did you know? We get our insults from https://dog.ceo.")
+            await ctx.send("Did you know? We get our doggos from https://dog.ceo.")
 
     @commands.slash_command(name="fortune-cookie", description="Get your daily fortune.")
     @commands.cooldown(1, 24 * 60 * 60, commands.BucketType.user)
@@ -250,14 +250,16 @@ class FunCog(commands.Cog):
         total_mc = 0
         correct = 0
 
+        streak = 0
+        highest_streak = 0
+
+        streak_msg = await ctx.send("Your streak will appear here.")
         game_msg = await ctx.send("There should be a math question here.")
-        streak_msg = await ctx.send("")
 
         for i in range(questions):
             num1 = random.randint(1, 12)
             num2 = random.randint(1, 12)
-            streak = 0
-            highest_streak = 0
+
 
             await game_msg.edit(f"**#{i + 1}** {num1} × {num2}")
 
@@ -279,7 +281,7 @@ class FunCog(commands.Cog):
 
             if player_ans == true_ans:
                 streak += 1
-                if streak >= 2:
+                if streak >= 3:
                     total_xp += round(Constants.XPSettings.FAST_MATH_QUESTION_XP * ((streak * 0.15) + 1))
                     total_mc += round(Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN * ((streak * 0.15) + 1))
                     await streak_msg.edit(f"Streak of **{streak}** questions in a row! 🔥")
@@ -289,12 +291,9 @@ class FunCog(commands.Cog):
                 correct += 1
 
             else:
-                highest_streak = streak
-                await streak_msg.edit(f"Lost the streak! 😭")
+                if highest_streak < streak:
+                    highest_streak = streak
                 streak = 0  # Resets the streak once getting a question wrong
-
-            if streak > highest_streak:
-                highest_streak = streak
 
             await msg.delete()
 
@@ -312,12 +311,20 @@ class FunCog(commands.Cog):
         em.add_field(name="Correct", value=correct, inline=False)
         em.add_field(name="Incorrect", value=questions - correct, inline=False)
         em.add_field(name="Total Questions", value=questions, inline=False)
+
         if round(correct / questions * 100, 2) != 100:
             em.add_field(name="Percentage", value=str(round(correct / questions * 100, 2)) + '%', inline=False)
         else:
             em.add_field(name="Percentage", value="💯💯💯💯", inline=False)
+
         em.add_field(name="XP Earnings", value=total_xp, inline=False)
         em.add_field(name="MemeCoin Earnings", value=total_mc, inline=False)
         em.add_field(name="Highest Streak", value=highest_streak, inline=False)
 
         await ctx.send(embed=em)
+
+    @commands.slash_command(name="useless-fact", description="Learn something you can't live without")
+    async def useless_fact(self, ctx):
+        r = requests.get("https://uselessfacts.jsph.pl/random.txt?language=en").content.decode()
+
+        await ctx.respond(r)

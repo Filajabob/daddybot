@@ -25,7 +25,10 @@ def log_msg(msg, client):
         f.seek(0)
         f.write(str(previous + 1))
 
-def get_msg_stats(client, date=datetime.date.today()):
+def get_msg_stats(client, date=None):
+    if not date:
+        date = datetime.date.today()
+
     dev = is_dev(client)
 
     if not dev:
@@ -65,7 +68,10 @@ def log_member_join(member, client):
         f.seek(0)
         f.write(str(previous + 1))
 
-def get_member_join_stats(client, date=datetime.date.today()):
+def get_member_join_stats(client, date=None):
+    if not date:
+        date = datetime.date.today()
+
     dev = is_dev(client)
 
     if not dev:
@@ -105,7 +111,10 @@ def log_member_leave(member, client):
         f.seek(0)
         f.write(str(previous + 1))
 
-def get_member_leave_stats(client, date=datetime.date.today()):
+def get_member_leave_stats(client, date=None):
+    if not date:
+        date = datetime.date.today()
+
     dev = is_dev(client)
 
     if not dev:
