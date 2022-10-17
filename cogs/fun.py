@@ -279,7 +279,7 @@ class FunCog(commands.Cog):
 
             if player_ans == true_ans:
                 streak += 1
-                if streak >= 3:
+                if streak >= 2:
                     total_xp += round(Constants.XPSettings.FAST_MATH_QUESTION_XP * ((streak * 0.15) + 1))
                     total_mc += round(Constants.MemeCoin.FAST_MATH_QUESTION_MEMECOIN * ((streak * 0.15) + 1))
                     await streak_msg.edit(f"Streak of **{streak}** questions in a row! 🔥")
@@ -290,7 +290,11 @@ class FunCog(commands.Cog):
 
             else:
                 highest_streak = streak
+                await streak_msg.edit(f"Lost the streak! 😭")
                 streak = 0  # Resets the streak once getting a question wrong
+
+            if streak > highest_streak:
+                highest_streak = streak
 
             await msg.delete()
 
