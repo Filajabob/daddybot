@@ -7,6 +7,9 @@ class Constants:
                                 # with only one question, getting it right, and getting the bonus.
     FAST_MATH_MAX_ANSWER_TIME = 5  # Number of seconds to answer a Fast Math question
 
+    GAMES = ["Minecraft", "Fortnite", "Valorant", "Roblox", "Just Chill"]  # Games recognized in the LFG system
+    MEMETOPIA_ID = 1021919859203903488
+
     class XPSettings:
         FRIEND_CODE_XP = 5500  # XP the code creator gets
         FRIEND_CODE_CLAIMER_XP = 3500  # XP the code claimer gets

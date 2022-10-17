@@ -10,6 +10,7 @@ from discord.commands import Option, SlashCommandGroup
 
 import utils
 from utils.constants import Constants
+from utils.errors import FeatureNotImplemented
 
 Ranks = Constants.Ranks
 
@@ -316,3 +317,12 @@ class MiscCog(commands.Cog):
             i += 1
 
         await ctx.respond(embed=em)
+
+    @commands.slash_command(name="active", description="Become available for a game")
+    async def active(self, ctx):
+        raise FeatureNotImplemented()
+
+    @commands.slash_command(name="lfg", description="Want to play a game with someone?")
+    async def lfg(self, ctx, game: Option(str, "The game to play",
+                                          choices=Constants.GAMES)):
+        raise FeatureNotImplemented()
