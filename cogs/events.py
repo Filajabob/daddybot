@@ -25,6 +25,16 @@ class EventCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        memetopia = await self.client.fetch_guild(1021919859203903488)
+        raw_roles = await memetopia.fetch_roles()
+        role_names = [role.name for role in raw_roles]
+
+        for game in Constants.GAMES:
+            if f"Playing {game}" in role_names:
+                continue
+
+            await memetopia.create_role(name=f"Playing {game}", mentionable=True, color=discord.Color.from_rgb(208, 0, 255))
+
         print(f"Client logged in as {self.client.user.name}.")
 
     @commands.Cog.listener()
@@ -35,6 +45,8 @@ class EventCog(commands.Cog):
         elif isinstance(error, commands.MissingPermissions):
             await ctx.respond(f"Don't overstep boundaries! {str(error)}")
             return
+        elif isinstance(error, utils.errors.MissingFunds):
+            await ctx.respond("You don't have enough funds for that.")
 
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
 
