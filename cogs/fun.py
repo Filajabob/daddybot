@@ -322,3 +322,9 @@ class FunCog(commands.Cog):
         em.add_field(name="Highest Streak", value=highest_streak, inline=False)
 
         await ctx.send(embed=em)
+
+    @commands.slash_command(name="useless-fact", description="Learn something you can't live without")
+    async def useless_fact(self, ctx):
+        r = requests.get("https://uselessfacts.jsph.pl/random.txt?language=en").content.decode()
+
+        await ctx.respond(r)
