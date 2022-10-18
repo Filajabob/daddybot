@@ -5,10 +5,12 @@
 ### Minor Changes:
 
 - Added useless fact command (/useless-fact)
+- Updated constants
 
 ### Bug fixes:
 
 - Moved bug fix [#32](https://github.com/Filajabob/daddybot/issues/32) to Open Beta
+- Fixed Fast Math highest streak display glitch
 
 ### Coming next/known issues:
 
