@@ -2,6 +2,7 @@
 
 import discord
 from discord.ext import commands
+from discord.ui import View
 import random
 import asyncio
 import itertools
@@ -11,6 +12,8 @@ from async_timeout import timeout
 from functools import partial
 import youtube_dl
 from youtube_dl import YoutubeDL
+
+import utils
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -309,9 +312,14 @@ class MusicCog(commands.Cog):
         vc.resume()
         await ctx.respond("Resuming ⏯️")
 
-    @commands.slash_command(name='skip', description="skips to next song in queue")
+    @commands.slash_command(name='skip', description="Skips to next song in queue. Members below Rank 4 must /vote-skip")
     async def skip_(self, ctx):
         """Skip the song."""
+        if utils.get_rank(ctx.author, self.bot) < 4 or ctx.message.author.guild_permissions.administrator or \
+                ctx.message.author.guild_permissions.move_members:
+            await ctx.respond("You must be Rank 4 or above to skip. You can instead do **/vote-skip**", ephemeral=True)
+            return
+
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
@@ -327,6 +335,77 @@ class MusicCog(commands.Cog):
         vc.stop()
 
         await ctx.respond("Skipping...")
+
+    @commands.slash_command(name="vote-skip", description="Set up a poll to skip the current playing song")
+    async def vote_skip(self, ctx):
+        client = self.bot
+        vc = ctx.voice_client
+
+        if not vc or not vc.is_connected():
+            embed = discord.Embed(title="", description="I'm not connected to a voice channel",
+                                  color=discord.Color.green())
+            return await ctx.respond(embed=embed)
+
+        if vc.is_paused():
+            pass
+        elif not vc.is_playing():
+            return
+
+        voted = []
+
+        class VoteSkipView(View):
+            def __init(self):
+                self.timeout = 60
+                self.disable_on_timeout = True
+
+                super().__init__()
+
+            async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
+                if inter.user.id in voted:
+                    await inter.response.send_message(content="You already voted!",
+                                                      ephemeral=True)
+                    return False
+                return True
+
+            @discord.ui.button(style=discord.ButtonStyle.green, emoji="⏩")
+            async def skip_callback(self, button, inter):
+                voted.append(inter.user.id)
+                await inter.response.send_message(content="Voted!",
+                                                  ephemeral=True)
+
+                em = discord.Embed(title="Vote Skip", description="Vote to skip this song")
+                em.add_field(name="Vote Skip alert!", value="Click the button below to vote in favour of skipping.")
+                em.set_footer(text=f"Votes: {len(voted)} ⏩")
+
+                await inter.followup.edit_message(message_id=inter.message.id, embed=em)
+
+                if len(voted) >= utils.Constants.REQUIRED_VOTES_TO_SKIP:
+                    await inter.followup.edit_message(message_id=inter.message.id, content="The vote was successful. This song will be skipped.",
+                                                      embed=None, view=None)
+
+                    if not vc or not vc.is_connected():
+                        embed = discord.Embed(title="", description="I'm not connected to a voice channel",
+                                              color=discord.Color.green())
+                        return await ctx.respond(embed=embed)
+
+                    if vc.is_paused():
+                        pass
+                    elif not vc.is_playing():
+                        return
+
+                    vc.stop()
+
+
+        em = discord.Embed(title="Vote Skip", description="Vote to skip this song")
+        em.add_field(name="Vote Skip alert!", value="Click the button below to vote in favour of skipping.")
+        em.set_footer(text="Votes: 0 ⏩")
+
+        vote_msg = await ctx.respond(embed=em, view=VoteSkipView())
+
+        def check(inter):
+            print(inter.data)
+            return inter.data["component_type"] == 2 and inter.message.id == vote_msg.id
+
 
     @commands.slash_command(name='remove', aliases=['rm', 'rem'], description="removes specified song from queue")
     async def remove_(self, ctx, pos: int = None):
@@ -481,6 +560,11 @@ class MusicCog(commands.Cog):
         !Warning!
             This will destroy the player assigned to your guild, also deleting any queued songs and settings.
         """
+        if utils.get_rank(ctx.author, self.bot) < 4 or ctx.message.author.guild_permissions.administrator or \
+                ctx.message.author.guild_permissions.move_members:
+            await ctx.respond("You must be Rank 4 or above to stop. You can instead mute the bot, or alternatively do **/vote-skip**", ephemeral=True)
+            return
+
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
