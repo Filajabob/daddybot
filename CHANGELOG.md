@@ -1,14 +1,17 @@
 # Changelog
 
-## 1.0.0
+## 1.0.0 (2022.10.17)
 
 ### Minor Changes:
 
 - Added useless fact command (/useless-fact)
+- Updated constants
+- Added vote skipping
 
 ### Bug fixes:
 
 - Moved bug fix [#32](https://github.com/Filajabob/daddybot/issues/32) to Open Beta
+- Fixed Fast Math highest streak display glitch
 
 ### Coming next/known issues:
 

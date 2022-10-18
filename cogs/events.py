@@ -2,6 +2,7 @@ import json
 import random
 import logging
 import traceback
+import asyncio
 
 import datetime
 import discord
@@ -40,13 +41,13 @@ class EventCog(commands.Cog):
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.respond(f'Slow down! You can use this command in {round(error.retry_after, 2)} seconds.')
+            await ctx.respond(f'Slow down! You can use this command in {round(error.retry_after, 2)} seconds.', ephemeral=True)
             return
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.respond(f"Don't overstep boundaries! {str(error)}")
+            await ctx.respond(f"Don't overstep boundaries! {str(error)}", ephemeral=True)
             return
         elif isinstance(error, utils.errors.MissingFunds):
-            await ctx.respond("You don't have enough funds for that.")
+            await ctx.respond("You don't have enough funds for that.", ephemeral=True)
 
         await ctx.respond(f"Something went wrong! Error: {error}", ephemeral=True)
 
@@ -139,4 +140,10 @@ class EventCog(commands.Cog):
         em.add_field(name="After", value=msg_after.content, inline=False)
 
         channel = await self.client.fetch_channel(1026665929335119914)
-        await channel.send(embed=em)
+
+        try:
+            await channel.send(embed=em)
+        except discord.errors.HTTPException:
+            em = discord.Embed(title=f"{msg_before.author.name} edited a message", timestamp=datetime.datetime.now(),
+                           color=discord.Color.blue())
+            em.add_field(name="Oops..", value="An HTTP Exception occurred and further information is not available.")
