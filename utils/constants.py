@@ -10,6 +10,8 @@ class Constants:
     GAMES = ["Minecraft", "Fortnite", "Valorant", "Roblox", "Just Chill"]  # Games recognized in the LFG system
     MEMETOPIA_ID = 1021919859203903488
 
+    REQUIRED_VOTES_TO_SKIP = 3  # Required amount of votes to skip a song
+
     class XPSettings:
         FRIEND_CODE_XP = 5500  # XP the code creator gets
         FRIEND_CODE_CLAIMER_XP = 3500  # XP the code claimer gets

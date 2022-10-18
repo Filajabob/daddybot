@@ -6,6 +6,7 @@
 
 - Added useless fact command (/useless-fact)
 - Updated constants
+- Added vote skipping
 
 ### Bug fixes:
 
