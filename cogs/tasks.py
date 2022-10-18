@@ -57,7 +57,15 @@ class TaskCog(commands.Cog):
                     await member.add_roles(rank1)
                     await member.remove_roles(rank2, rank3, rank4, rank5)
                     try:
-                        await member.send("Congratulations! You got Rank I in Memetopia!")
+                        em = discord.Embed(title="You got rank **I** in **Memetopia**!",
+                                           description="Congratulations! You just got your first rank in **Memetopia**."
+                                                       " Here are the benefits of rank I")
+                        em.add_field(name="Advertise", value="You can now advertise! In #self-promo"
+                                                             " you can advertise anything! Make sure you abide by the rules", inline=False)
+                        em.add_field(name="Stats", value="View server stats anytime! You can see member joins, sent messages and more stuff.", inline=False)
+                        em.add_field(name="Private Text Channel", value="You now have a cool private channel just for ranked people. Talk about cool people stuff.")
+
+                        await member.send(embed=em)
                     except discord.HTTPException:
                         pass
 
@@ -67,7 +75,19 @@ class TaskCog(commands.Cog):
                     await member.add_roles(rank2)
                     await member.remove_roles(rank1, rank3, rank4, rank5)
                     try:
-                        await member.send("Congratulations! You got Rank II in Memetopia!")
+                        em = discord.Embed(title="You got rank **II** in **Memetopia**!",
+                                           description="Congratulations! You're climbing up!")
+                        em.add_field(name="Nicknames", value="Hate your username? Change it! Make sure you don't change"
+                                                             " your nickname to inappropriate stuff because it **can**"
+                                                             " be taken away.",
+                                     inline=False)
+                        em.add_field(name="Stats",
+                                     value="View server stats anytime! You can see member joins, sent messages and more stuff.",
+                                     inline=False)
+                        em.add_field(name="Private Text Channel",
+                                     value="You now have a cool private channel just for ranked people. Talk about cool people stuff.")
+
+                        await member.send(embed=em)
                     except discord.HTTPException:
                         pass
 
