@@ -5,6 +5,7 @@
 ### Minor Changes:
 
 - Added useless fact command (/useless-fact)
+- Changed around xp benefits and xp milestones
 
 ### Bug fixes:
 
