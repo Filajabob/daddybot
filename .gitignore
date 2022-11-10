@@ -16,3 +16,5 @@ assets/bot/memecoin/*
 assets/bot/stats/message_stats/*
 assets/bot/stats/member_join_stats/*
 assets/bot/stats/member_leave_stats/*
+
+gpt/models/*
