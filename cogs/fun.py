@@ -14,6 +14,8 @@ from discord.ui import Button, View
 import utils
 from utils import Constants
 
+import gpt
+
 
 class FunCog(commands.Cog):
     def __init__(self, client):
@@ -331,3 +333,7 @@ class FunCog(commands.Cog):
         r = requests.get("https://uselessfacts.jsph.pl/random.txt?language=en").content.decode()
 
         await ctx.respond(r)
+
+    @commands.slash_command(name="convo", description="Talk with a bot. Courtesy OpenAI")
+    async def convo(self, ctx):
+        await gpt.conversation(ctx, self.client)
