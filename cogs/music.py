@@ -315,10 +315,6 @@ class MusicCog(commands.Cog):
     @commands.slash_command(name='skip', description="Skips to next song in queue. Members below Rank 4 must /vote-skip")
     async def skip_(self, ctx):
         """Skip the song."""
-        if utils.get_rank(ctx.author, self.bot) < 4 or ctx.message.author.guild_permissions.administrator or \
-                ctx.message.author.guild_permissions.move_members:
-            await ctx.respond("You must be Rank 4 or above to skip. You can instead do **/vote-skip**", ephemeral=True)
-            return
 
         vc = ctx.voice_client
 

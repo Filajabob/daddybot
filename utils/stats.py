@@ -130,3 +130,50 @@ def get_member_leave_stats(client, date=None):
 
     with open(path, 'r') as f:
         return int(f.read())
+
+def log_vc_seconds(client, seconds=10):
+    dev = is_dev(client)
+
+    if not dev:
+        parent_dir = "assets/bot/stats/vc_stats"
+    else:
+        parent_dir = "assets/dev_bot/stats/vc_stats"
+
+    today = datetime.date.today()
+    parent_dir = os.path.join(parent_dir, str(today.year), str(today.month), str(today.day))
+
+    path = os.path.join(parent_dir, "seconds.txt")
+
+    if not os.path.isfile(path):
+        os.makedirs(parent_dir, exist_ok=True)
+        with open(path, 'w') as f:
+            f.write("0")
+
+    with open(path, 'r+') as f:
+        prev = int(f.read())
+        after = prev + seconds
+
+        f.seek(0)
+        f.write(str(after))
+
+def get_vc_seconds(client, date=None):
+    if not date:
+        date = datetime.date.today()
+
+    dev = is_dev(client)
+
+    if not dev:
+        parent_dir = "assets/bot/stats/vc_stats"
+    else:
+        parent_dir = "assets/dev_bot/stats/vc_stats"
+
+    today = datetime.date.today()
+
+    parent_dir = os.path.join(parent_dir, str(date.year), str(date.month), str(date.day))
+    path = os.path.join(parent_dir, "seconds.txt")
+
+    if not os.path.isfile(path):
+        return 0
+
+    with open(path, 'r') as f:
+        return int(f.read())
