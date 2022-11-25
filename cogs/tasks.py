@@ -127,24 +127,30 @@ class TaskCog(commands.Cog):
         memetopia = await self.client.fetch_guild(1021919859203903488)
         members = await memetopia.fetch_members().flatten()
 
-        with open("assets/bot/presences/presences.json", 'r') as f:
+        christmas_day = datetime.date(year=2020, month=12, day=25)
+        days_until_christmas = (christmas_day - date.today()).days
+
+        # temporarily disabled for Christmas: presence_json = "assets/bot/presences/presences.json"
+        presence_json = "assets/bot/presences/xmas.json"
+
+        with open(presence_json, 'r') as f:
             data = json.load(f)
 
         presence_category = random.choice(["gaming", "listening", "watching"])
 
         if presence_category == "gaming":
             activity = discord.Game(name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         elif presence_category == "listening":
             activity = discord.Activity(type=discord.ActivityType.listening,
                                         name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         else:
             activity = discord.Activity(type=discord.ActivityType.watching,
                                         name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         await self.client.change_presence(activity=activity)
 

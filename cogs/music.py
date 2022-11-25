@@ -560,10 +560,6 @@ class MusicCog(commands.Cog):
         !Warning!
             This will destroy the player assigned to your guild, also deleting any queued songs and settings.
         """
-        if utils.get_rank(ctx.author, self.bot) < 4 or ctx.message.author.guild_permissions.administrator or \
-                ctx.message.author.guild_permissions.move_members:
-            await ctx.respond("You must be Rank 4 or above to stop. You can instead mute the bot, or alternatively do **/vote-skip**", ephemeral=True)
-            return
 
         vc = ctx.voice_client
 
