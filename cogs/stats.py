@@ -37,3 +37,10 @@ class StatsCog(commands.Cog):
         em.set_footer(text="Including kicks/bans. Some join/leave events may not be included due to downtime.")
 
         await ctx.respond(embed=em)
+
+    @stats.command(name="vc-time", description="Get time spent in VCs. Ranked members only.")
+    async def vc_time(self, ctx):
+        if utils.xp.get_amount(ctx.author, utils.is_dev(self.client)) < Constants.Ranks.RANK_1:
+            raise commands.MissingPermissions("You must be ranked to use this command.")
+
+        await ctx.respond(str(datetime.timedelta(seconds=utils.get_vc_seconds(self.client))))

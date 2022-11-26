@@ -12,6 +12,8 @@ class Constants:
 
     REQUIRED_VOTES_TO_SKIP = 3  # Required amount of votes to skip a song
 
+    VC_XP = 1 # Amount of XP per 10 seconds in a VC, with at least 2 people in the VC
+
     class XPSettings:
         FRIEND_CODE_XP = 5500  # XP the code creator gets
         FRIEND_CODE_CLAIMER_XP = 3500  # XP the code claimer gets

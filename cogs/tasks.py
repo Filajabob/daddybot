@@ -20,6 +20,7 @@ class TaskCog(commands.Cog):
         self.presence_updater.start()
         self.daily.start()
         self.daily_stats.start()
+        self.measure_vc_usage.start()
 
     # Assign the appropriate roles for people depending on their XP
     @tasks.loop(seconds=7.0)
@@ -127,24 +128,30 @@ class TaskCog(commands.Cog):
         memetopia = await self.client.fetch_guild(1021919859203903488)
         members = await memetopia.fetch_members().flatten()
 
-        with open("assets/bot/presences/presences.json", 'r') as f:
+        christmas_day = datetime.date(year=2020, month=12, day=25)
+        days_until_christmas = str((christmas_day - datetime.date.today()).days)
+
+        # temporarily disabled for Christmas: presence_json = "assets/bot/presences/presences.json"
+        presence_json = "assets/bot/presences/xmas.json"
+
+        with open(presence_json, 'r') as f:
             data = json.load(f)
 
         presence_category = random.choice(["gaming", "listening", "watching"])
 
         if presence_category == "gaming":
             activity = discord.Game(name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         elif presence_category == "listening":
             activity = discord.Activity(type=discord.ActivityType.listening,
                                         name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         else:
             activity = discord.Activity(type=discord.ActivityType.watching,
                                         name=random.choice(data[presence_category]).replace("{ran member}",
-                                                                                       f"@{random.choice(members).name}"))
+                                                                                       f"@{random.choice(members).name}").replace("{xmas cd}", days_until_christmas))
 
         await self.client.change_presence(activity=activity)
 
@@ -175,7 +182,28 @@ class TaskCog(commands.Cog):
         em.add_field(name="Member Joins", value=str(utils.get_member_join_stats(self.client)), inline=False)
         em.add_field(name="Member Leaves", value=str(utils.get_member_leave_stats(self.client)), inline=False)
         em.add_field(name="Change", value=change, inline=False)
+        em.add_field(name="Time Spent in VCs", value=str(datetime.timedelta(seconds=utils.get_vc_seconds(self.client))),
+                     inline=False)
         em.set_footer(text="Including kicks/bans. Some join/leave events may not be included due to downtime.")
 
         msg = await stats_channel.send(embed=em)
         await msg.publish()
+
+    @tasks.loop(seconds=10)
+    async def measure_vc_usage(self):
+        await self.client.wait_until_ready()
+
+        memetopia = self.client.get_guild(1021919859203903488)
+
+        channels = await memetopia.fetch_channels()
+        voice_channels = [vc for vc in channels if isinstance(vc, discord.VoiceChannel)]
+
+        for vc in voice_channels:
+            if len(list(vc.voice_states.keys())) >= 2:
+                print(list(vc.voice_states.keys()))
+                for member in list(vc.voice_states.keys()):
+                    member = await memetopia.fetch_member(member)
+                    print(member.name)
+                    utils.xp.add(member, Constants.VC_XP, dev=utils.is_dev(self.client))
+
+                utils.log_vc_seconds(self.client, len(list(vc.voice_states.keys())) * 10)
