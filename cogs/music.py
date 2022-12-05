@@ -75,7 +75,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         if 'entries' in data:
             # take first item from a playlist
-            data = data['entries'][0]
+            if len(data['entries']) > 0:
+                data = data['entries'][0]
 
         embed = discord.Embed(title="",
                               description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]",

@@ -128,7 +128,7 @@ class TaskCog(commands.Cog):
         memetopia = await self.client.fetch_guild(1021919859203903488)
         members = await memetopia.fetch_members().flatten()
 
-        christmas_day = datetime.date(year=2020, month=12, day=25)
+        christmas_day = datetime.date(year=2022, month=12, day=25)
         days_until_christmas = str((christmas_day - datetime.date.today()).days)
 
         # temporarily disabled for Christmas: presence_json = "assets/bot/presences/presences.json"
@@ -200,10 +200,8 @@ class TaskCog(commands.Cog):
 
         for vc in voice_channels:
             if len(list(vc.voice_states.keys())) >= 2:
-                print(list(vc.voice_states.keys()))
                 for member in list(vc.voice_states.keys()):
                     member = await memetopia.fetch_member(member)
-                    print(member.name)
                     utils.xp.add(member, Constants.VC_XP, dev=utils.is_dev(self.client))
 
                 utils.log_vc_seconds(self.client, len(list(vc.voice_states.keys())) * 10)
