@@ -131,8 +131,7 @@ class TaskCog(commands.Cog):
         christmas_day = datetime.date(year=2022, month=12, day=25)
         days_until_christmas = str((christmas_day - datetime.date.today()).days)
 
-        # temporarily disabled for Christmas: presence_json = "assets/bot/presences/presences.json"
-        presence_json = "assets/bot/presences/xmas.json"
+        presence_json = "assets/bot/presences/presences.json"
 
         with open(presence_json, 'r') as f:
             data = json.load(f)
