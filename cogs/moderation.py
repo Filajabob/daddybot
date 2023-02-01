@@ -31,7 +31,8 @@ class ModerationCog(commands.Cog):
         else:
             em.add_field(name="Moderator", value=f"You were banned by {ctx.author.mention}", inline=False)
 
-        em.add_field(name="Farewell..", value="Whatever you did, hope you have a good life. Adios amigo!")
+        em.add_field(name="Farewell..", value="Whatever you did, hope you have a good life. You can appeal here: "
+                                              "https://forms.gle/qSco7gWpcqhFsPYKA. Adios amigo!")
 
         await member.send(embed=em)
         await member.ban(delete_message_days=purge, reason=reason)
@@ -84,7 +85,8 @@ class ModerationCog(commands.Cog):
         em = discord.Embed(title="You were given a timeout in Memetopia", description="You were just given a timeout in "
                                                                                       "the Memetopia server.")
         em.add_field(name="Oof..",
-                     value="After consideration by the mods, you have been given a timeout in Memetopia. Don't cry.",
+                     value="After consideration by the mods, you have been given a timeout in Memetopia. Don't cry. "
+                           "You can appeal here: https://forms.gle/qSco7gWpcqhFsPYKA",
                      inline=False)
         em.add_field(name="Reason", value=reason, inline=False)
 
